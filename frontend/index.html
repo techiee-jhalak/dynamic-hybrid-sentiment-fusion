@@ -3,9 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic Sentiment Fusion</title>
+    <title>Dynamic Hybrid Sentiment Fusion</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- Frontend placeholder: UI will be implemented when requested -->
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>Dynamic Hybrid Sentiment Fusion</h1>
+            <p class="subtitle">Noise-Aware Sentiment Analysis for Code-Mixed Social Media Text</p>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Text Input Section -->
+            <section class="input-section" aria-label="Text Input">
+                <div class="input-header">
+                    <label for="text-input">Enter text to analyze:</label>
+                    <span id="char-count" class="char-count" aria-live="polite">0 / 2048</span>
+                </div>
+                <textarea 
+                    id="text-input" 
+                    placeholder="Enter Hinglish, code-mixed, or standard text here (e.g., 'yeh movie bahut acchi hai 😍')..."
+                    maxlength="2048"
+                    rows="5"
+                    aria-label="Input text for sentiment analysis"
+                ></textarea>
+                
+                <div class="action-buttons">
+                    <button id="analyze-btn" class="btn btn-primary" type="button">Analyze Sentiment</button>
+                    <button id="clear-btn" class="btn btn-secondary" type="button">Clear</button>
+                </div>
+                
+                <!-- Loading and Error States -->
+                <div id="loading-state" class="state-message loading hidden" aria-live="polite">
+                    <div class="spinner"></div>
+                    <span>Analyzing sentiment...</span>
+                </div>
+                <div id="error-state" class="state-message error hidden" aria-live="assertive">
+                    <!-- Error message goes here -->
+                </div>
+            </section>
+
+            <!-- Results Dashboard (Hidden by default) -->
+            <section id="results-dashboard" class="results-dashboard hidden" aria-label="Analysis Results">
+                
+                <!-- Core Result -->
+                <div class="card core-result">
+                    <h2>Overall Sentiment</h2>
+                    <div class="result-highlight">
+                        <span id="sentiment-badge" class="badge">--</span>
+                        <div class="result-score">
+                            <span class="score-value" id="final-score">0.000</span>
+                            <span class="score-label">Final Fusion Score</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Explainability Grid -->
+                <div class="explainability-grid">
+                    
+                    <!-- Dynamic Fusion Details -->
+                    <div class="card fusion-details">
+                        <h3>Dynamic Fusion</h3>
+                        <div class="metrics-list">
+                            <div class="metric-row">
+                                <span class="metric-name">VADER Score</span>
+                                <span class="metric-value" id="vader-score">0.000</span>
+                            </div>
+                            <div class="metric-row">
+                                <span class="metric-name">DistilBERT Score</span>
+                                <span class="metric-value" id="distilbert-score">0.000</span>
+                            </div>
+                            <div class="metric-row">
+                                <span class="metric-name">Dynamic Weight (α)</span>
+                                <span class="metric-value highlight-text" id="alpha-value">0.000</span>
+                            </div>
+                            <div class="metric-row formula-row">
+                                <em>S_final = α·VADER + (1-α)·DistilBERT</em>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Noise Analysis -->
+                    <div class="card noise-analysis">
+                        <h3>Noise Analysis</h3>
+                        <div class="noise-band-display">
+                            <span class="noise-label">Band:</span>
+                            <span id="noise-band" class="badge noise-badge">--</span>
+                        </div>
+                        
+                        <div class="progress-bar-container">
+                            <div class="progress-label">
+                                <span>Composite Noise (N)</span>
+                                <span id="composite-noise">0.000</span>
+                            </div>
+                            <div class="progress-track">
+                                <div id="noise-progress" class="progress-fill" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="metrics-list noise-components">
+                            <div class="metric-row">
+                                <span class="metric-name" title="Emoji count / max(token_count, 1)">Emoji Density (E)</span>
+                                <span class="metric-value" id="emoji-density">0.000</span>
+                            </div>
+                            <div class="metric-row">
+                                <span class="metric-name" title="Elongated-character token ratio">Repetition Ratio (R)</span>
+                                <span class="metric-value" id="repetition-ratio">0.000</span>
+                            </div>
+                            <div class="metric-row">
+                                <span class="metric-name" title="Hinglish/code-mixing token ratio">Code-Mixing (C)</span>
+                                <span class="metric-value" id="codemix-intensity">0.000</span>
+                            </div>
+                            <div class="metric-row">
+                                <span class="metric-name" title="Special-symbol token ratio">Symbol Density (S)</span>
+                                <span class="metric-value" id="symbol-density">0.000</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div> <!-- End Explainability Grid -->
+
+                <!-- Router Explanation -->
+                <div class="card router-explanation">
+                    <h3>Adaptive Router Decision</h3>
+                    <p id="router-text" class="explanation-text">--</p>
+                </div>
+
+                <!-- Technical Details Accordion -->
+                <details class="technical-details">
+                    <summary>Technical Details & Architecture</summary>
+                    <div class="details-content">
+                        <ul>
+                            <li><strong>Models:</strong> VADER Lexicon + DistilBERT Transformer (Fine-tuned)</li>
+                            <li><strong>Noise Score (N):</strong> <code>0.25·E + 0.25·R + 0.30·C + 0.20·S</code></li>
+                            <li><strong>Router Logic:</strong> If N ≤ 0.20, α = 0.02. Else α = clamp(σ(z), 0.02, 0.25) where z = 0.05·(20 - L) + 12.0·N</li>
+                            <li><strong>Tokens (L):</strong> <span id="token-length">--</span></li>
+                        </ul>
+                    </div>
+                </details>
+
+            </section>
+        </main>
+    </div>
+    
+    <script src="app.js"></script>
 </body>
 </html>
