@@ -1,0 +1,64 @@
+# Python Bytecode and cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Distribution / Packaging
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Data and Model Artifacts
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+saved_models/*
+!saved_models/.gitkeep
+outputs/*
+!outputs/.gitkeep
+checkpoints/
+*.pt
+*.bin
+*.safetensors
+
+# Testing and coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# Logs and system
+*.log
+.DS_Store
+Thumbs.db
+
+# IDE and editors
+.idea/
+.vscode/
+*.swp
+*.swo

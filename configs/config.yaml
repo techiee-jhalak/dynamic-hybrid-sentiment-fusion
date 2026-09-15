@@ -1,0 +1,58 @@
+# Central Configuration for Dynamic Noise-Aware Sentiment Fusion
+
+project:
+  name: "Dynamic Noise-Aware Lexicon-Transformer Sentiment Fusion"
+  task: "binary_classification"
+  labels:
+    0: "Negative"
+    1: "Positive"
+
+noise_features:
+  weights:
+    w_emoji: 0.25        # E: Emoji Density
+    w_repetition: 0.25   # R: Character Repetition Ratio
+    w_codemix: 0.30      # C: Code-Mixing Intensity
+    w_symbol: 0.20       # S: Symbol Density
+
+routing:
+  reference_length: 20   # L0
+  noise_threshold: 0.20  # Threshold N <= 0.20 -> alpha = 0.02
+  w1: 0.05               # Length sensitivity weight
+  w2: 12.0               # Noise sensitivity weight
+  alpha_min: 0.02        # Lower clamping bound
+  alpha_max: 0.25        # Upper clamping bound
+  decision_threshold: 0.50
+
+dataset:
+  sail_samples: 12568
+  curated_samples: 1200
+  total_samples: 13768
+  train_split: 0.70
+  val_split: 0.10
+  test_split: 0.20
+  stratified: true
+  random_seed: 42
+
+model_training:
+  distilbert:
+    model_name: "distilbert-base-uncased"
+    epochs: 3
+    batch_size: 16
+    learning_rate: 0.00002 # 2e-5
+    max_length: 128
+    weight_decay: 0.01
+
+baselines:
+  - "logistic_regression"
+  - "vader"
+  - "distilbert"
+  - "static_fusion"
+  - "dynamic_fusion"
+  - "bertweet"
+
+paths:
+  data_dir: "data"
+  raw_data_dir: "data/raw"
+  processed_data_dir: "data/processed"
+  saved_models_dir: "saved_models"
+  outputs_dir: "outputs"
