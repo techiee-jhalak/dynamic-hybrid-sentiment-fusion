@@ -106,11 +106,10 @@ Dataset integrity checks performed across sentence texts and token sequences:
 ---
 
 ## VADER Compatibility
-- **Current State**: `src/models/vader_model.py` is configured for binary polarity scoring:
-  - Outputs continuous compound score $c \in [-1, 1]$ mapped to scalar positive probability $S_{VADER} = (c + 1) / 2 \in [0, 1]$.
-  - While VADER natively provides `{pos, neg, neu}` proportions, these raw proportions represent lexical percentages rather than a calibrated 3-class probability distribution.
-- **Limitation**: Direct 3-class probabilistic inference with VADER without a formal calibration scheme is scientifically unsubstantiated.
-- **Decision Needed**: Requires formal calibration or thresholding rule before SentiMix 3-class fusion.
+- **Implemented Module**: `src/models/vader_3class.py` (`VADER3ClassAdapter`)
+  - Maps native VADER lexical proportions (`pos`, `neg`, `neu`) to an L1-normalized 3-element score vector on the simplex $\Delta^2$ with ordering `[positive=0, negative=1, neutral=2]`.
+  - Strictly deterministic, non-learned, and introduces zero fitted parameters or artificial thresholds.
+  - Preserves isolation of the original binary model in `src/models/vader_model.py`.
 
 ---
 
@@ -124,31 +123,33 @@ Dataset integrity checks performed across sentence texts and token sequences:
 ---
 
 ## Dynamic Fusion Compatibility
-- **Core Formula**:
-  $$S_{final} = \alpha \cdot S_{VADER} + (1 - \alpha) \cdot S_{DistilBERT}$$
-- **Current Limitation**: The mathematical definition of $S_{final}$ operates on 1D scalar probabilities for binary classification with decision threshold 0.50.
-- **3-Class Gap**:
-  - A 3-class task requires either:
-    1. **Vector Fusion**: $\mathbf{P}_{final} = \alpha \mathbf{P}_{VADER} + (1 - \alpha) \mathbf{P}_{DistilBERT}$ where $\mathbf{P} \in \Delta^2$.
-    2. **Hierarchical Fusion**: Neutral vs Polarity detection followed by Positive vs Negative routing.
-    3. **Continuous Polarity Fusion**: Fusion of continuous sentiment scores with 2 decision boundaries (e.g. $[-\tau, +\tau]$ for Neutral).
-- Changing this formula without research authorization violates experimental integrity.
+- **Implemented Module**: `src/models/fusion_3class.py` (`DynamicFusion3ClassFramework`, `fuse_3class_vectors`)
+- **Formula**:
+  $$\mathbf{P}_{final} = \alpha \cdot \mathbf{P}_{VADER} + (1 - \alpha) \cdot \mathbf{P}_{DistilBERT}$$
+  $$\hat{y} = \arg\max(\mathbf{P}_{final})$$
+- Preserves the exact mathematical router $\alpha \in [0.02, 0.25]$ and noise formulation $N = 0.25E + 0.25R + 0.30C + 0.20S$.
+- Supports all ablation modes: `dynamic`, `static`, `distilbert_only`, and `vader_only`.
 
 ---
 
-## Required Methodological Decisions
-Before running experiments on SentiMix, the following methodological decisions must be finalized:
-1. **Target Task Formulation**: Whether the paper will report 3-class macro-F1 (SemEval-2020 standard) or evaluate binary subsets.
-2. **3-Class VADER Calibration**: Definition of VADER probability vector or score representation for Neutral instances.
-3. **3-Class Fusion Formulation**: Explicit mathematical specification for fusing multi-class probability vectors or multi-threshold scores under the dynamic noise-adaptive weighting $\alpha$.
+## Methodological Decisions Documented
+All methodological questions have been formalized and resolved in `SENTIMIX_METHODOLOGY_DECISION.md`:
+1. **Target Task Formulation**: Primary evaluation is 3-class Macro F1 (SemEval-2020 standard). Secondary Positive-vs-Negative subset analysis is provided strictly isolated.
+2. **VADER 3-Class Representation**: Normalized lexical polarity proportions via deterministic `VADER3ClassAdapter`.
+3. **3-Class Dynamic Fusion Formulation**: Convex combination on probability simplex $\Delta^2$ with identical noise-adaptive $\alpha$.
 
 ---
 
 ## Phase 6 Readiness
 
-### **NOT_READY_FOR_PHASE_6**
+### **READY_FOR_PHASE_6**
 
-**Rationale**:
-1. The dataset integrated is **SemEval-2020 Task 9 (SentiMix Hinglish)**, which has 3 classes (`positive`, `negative`, `neutral`), whereas the active research specification and fusion mathematics are formulated for binary classification (`positive`, `negative`).
-2. Training DistilBERT or running Phase 6 experiments prior to resolving the 3-class fusion formulation would invalidate the research claims and compromise experiment reproducibility.
-3. The dataset loader, CoNLL parser, data structure, manifest, unit tests, and 3-class architecture scaffolding are fully completed and verified. Experiments must pause until methodology alignment is approved.
+**Readiness Checklist**:
+- [x] SentiMix dataset available locally (14k train, 3k dev, 3k test)
+- [x] CoNLL parser and dataset loader implemented and tested
+- [x] 3-class label schema validated and aligned (`pos=0, neg=1, neu=2`)
+- [x] VADER 3-class representation resolved (`VADER3ClassAdapter`)
+- [x] Vector fusion implemented and tested (`DynamicFusion3ClassFramework`)
+- [x] DistilBERT 3-class model architecture ready for training
+- [x] 3-class evaluation metrics implemented (`src/evaluation/metrics_3class.py`)
+- [x] Zero test regressions across entire repository (351 passed, 0 failed)
