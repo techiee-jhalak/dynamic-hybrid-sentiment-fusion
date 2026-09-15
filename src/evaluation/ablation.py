@@ -368,9 +368,12 @@ class AblationRunner:
         return ablation_results
 
     def save_csv(self, results: List[AblationResult]) -> Path:
-        """Write results/ablation_results.csv."""
+        """Write results/ablation_results.csv and results/ablations/ablation_results.csv."""
         self.output_dir.mkdir(parents=True, exist_ok=True)
         out_path = self.output_dir / "ablation_results.csv"
+        nested_dir = self.output_dir / "ablations"
+        nested_dir.mkdir(parents=True, exist_ok=True)
+        nested_path = nested_dir / "ablation_results.csv"
 
         fieldnames = [
             "variant", "samples", "accuracy", "precision",
@@ -378,10 +381,11 @@ class AblationRunner:
         ]
         rows = [r.to_csv_row() for r in results]
 
-        with open(out_path, "w", newline="", encoding="utf-8") as f:
-            writer = csv.DictWriter(f, fieldnames=fieldnames)
-            writer.writeheader()
-            writer.writerows(rows)
+        for path in (out_path, nested_path):
+            with open(path, "w", newline="", encoding="utf-8") as f:
+                writer = csv.DictWriter(f, fieldnames=fieldnames)
+                writer.writeheader()
+                writer.writerows(rows)
 
         return out_path
 

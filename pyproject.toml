@@ -20,7 +20,8 @@ dependencies = [
     "transformers>=4.35.0",
     "datasets>=2.14.0",
     "accelerate>=0.24.0",
-    "pyyaml>=6.0"
+    "pyyaml>=6.0",
+    "emoji>=2.8.0"
 ]
 
 [project.optional-dependencies]

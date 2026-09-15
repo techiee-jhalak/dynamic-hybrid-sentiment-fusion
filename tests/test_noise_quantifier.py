@@ -115,9 +115,21 @@ class TestNoiseQuantifier(unittest.TestCase):
         c_eng = calculate_code_mixing_ratio(pure_english)
         self.assertEqual(c_eng, 0.0)
 
+        # Monolingual Hindi has 0 code-mixing
+        pure_hindi = "ye bohot mast hai bhai sach"
+        c_hin = calculate_code_mixing_ratio(pure_hindi)
+        self.assertEqual(c_hin, 0.0)
+
+        # Asymmetric code-mixing: Tokens_eng=2, Tokens_hin=6 -> C = 2 / (6 + 1) = 2/7
         hinglish = "Ye movie bohot mast hai bhai sach me"
         c_hinglish = calculate_code_mixing_ratio(hinglish)
-        self.assertGreater(c_hinglish, 0.7)
+        self.assertAlmostEqual(c_hinglish, 2.0 / 7.0, places=5)
+
+        # Balanced code-mixing yields high intensity
+        balanced = "This movie is bohot mast and story is zabardast bhai"
+        c_balanced = calculate_code_mixing_ratio(balanced)
+        self.assertGreater(c_balanced, 0.5)
+        self.assertLessEqual(c_balanced, 1.0)
 
     def test_symbol_density_calculation(self):
         """Test S calculation on plain text vs symbol-dense text."""

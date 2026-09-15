@@ -271,26 +271,33 @@ class EvaluationEngine:
     # ------------------------------------------------------------------
 
     def save_metrics_csv(self, results: List[ModelResult]) -> Path:
-        """Write results/metrics.csv — one row per model."""
+        """Write results/metrics.csv and results/metrics/metrics.csv — one row per model."""
         self.output_dir.mkdir(parents=True, exist_ok=True)
         out_path = self.output_dir / "metrics.csv"
+        nested_dir = self.output_dir / "metrics"
+        nested_dir.mkdir(parents=True, exist_ok=True)
+        nested_path = nested_dir / "metrics.csv"
 
         rows = [r.to_scalar_dict() for r in results]
         if not rows:
             return out_path
 
         fieldnames = list(rows[0].keys())
-        with open(out_path, "w", newline="", encoding="utf-8") as f:
-            writer = csv.DictWriter(f, fieldnames=fieldnames)
-            writer.writeheader()
-            writer.writerows(rows)
+        for path in (out_path, nested_path):
+            with open(path, "w", newline="", encoding="utf-8") as f:
+                writer = csv.DictWriter(f, fieldnames=fieldnames)
+                writer.writeheader()
+                writer.writerows(rows)
 
         return out_path
 
     def save_predictions_csv(self, results: List[ModelResult]) -> Path:
-        """Write results/predictions.csv — one row per (model, sample) pair."""
+        """Write results/predictions.csv and results/predictions/predictions.csv."""
         self.output_dir.mkdir(parents=True, exist_ok=True)
         out_path = self.output_dir / "predictions.csv"
+        nested_dir = self.output_dir / "predictions"
+        nested_dir.mkdir(parents=True, exist_ok=True)
+        nested_path = nested_dir / "predictions.csv"
 
         rows: List[Dict[str, Any]] = []
         for result in results:
@@ -308,10 +315,11 @@ class EvaluationEngine:
             return out_path
 
         fieldnames = ["model", "sample_id", "true_label", "predicted_label", "positive_score", "text"]
-        with open(out_path, "w", newline="", encoding="utf-8") as f:
-            writer = csv.DictWriter(f, fieldnames=fieldnames)
-            writer.writeheader()
-            writer.writerows(rows)
+        for path in (out_path, nested_path):
+            with open(path, "w", newline="", encoding="utf-8") as f:
+                writer = csv.DictWriter(f, fieldnames=fieldnames)
+                writer.writeheader()
+                writer.writerows(rows)
 
         return out_path
 

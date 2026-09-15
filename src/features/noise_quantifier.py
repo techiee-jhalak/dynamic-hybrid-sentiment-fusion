@@ -101,8 +101,8 @@ PUNCTUATION_SYMBOLS = set(string.punctuation + "–—…•·«»“”‘’¿
 def calculate_emoji_density(text: Optional[str], tokens: Optional[List[str]] = None) -> float:
     """Compute Emoji Density E in [0, 1].
 
-    Measures the ratio of emoji occurrences to the total token count.
-    Returns 0.0 for empty or whitespace-only inputs.
+    Formula: E = Nemoji / Ntokens
+    Returns 0.0 for empty or zero-token inputs.
     """
     if text is None:
         return 0.0
@@ -110,16 +110,16 @@ def calculate_emoji_density(text: Optional[str], tokens: Optional[List[str]] = N
     if not text_str:
         return 0.0
 
-    num_emojis = emoji.emoji_count(text_str)
-    if num_emojis == 0:
-        return 0.0
-
     if tokens is None:
         tokens = TextPreprocessor().tokenize(text_str)
 
     total_tokens = len(tokens)
     if total_tokens == 0:
-        return 1.0 if num_emojis > 0 else 0.0
+        return 0.0
+
+    num_emojis = emoji.emoji_count(text_str)
+    if num_emojis == 0:
+        return 0.0
 
     density = num_emojis / total_tokens
     return min(1.0, max(0.0, float(density)))
@@ -128,34 +128,9 @@ def calculate_emoji_density(text: Optional[str], tokens: Optional[List[str]] = N
 def calculate_repetition_score(text: Optional[str], tokens: Optional[List[str]] = None) -> float:
     """Compute Character Repetition Ratio R in [0, 1].
 
-    Measures excessive character elongation (e.g. sooooo, achhaaaaa, !!!).
-    Returns 0.0 for empty or whitespace-only inputs.
-    """
-    if text is None:
-        return 0.0
-    text_str = str(text).strip()
-    if not text_str:
-        return 0.0
-
-    matches = [m.group(0) for m in REPETITION_PATTERN.finditer(text_str)]
-    if not matches:
-        return 0.0
-
-    total_chars = len(text_str)
-    if total_chars == 0:
-        return 0.0
-
-    repeated_chars_count = sum(len(m) for m in matches)
-    ratio = repeated_chars_count / total_chars
-    return min(1.0, max(0.0, float(ratio)))
-
-
-def calculate_code_mixing_ratio(text: Optional[str], tokens: Optional[List[str]] = None) -> float:
-    """Compute Code-Mixing Intensity C in [0, 1].
-
-    Measures the proportion of non-English / Hinglish / Devanagari tokens
-    relative to the total alphabetical word tokens.
-    Returns 0.0 for empty text or text without word tokens.
+    Formula: R = Nrepeat / Ntokens
+    where Nrepeat is the number of characters repeated consecutively more than twice.
+    Returns 0.0 for empty or zero-token inputs.
     """
     if text is None:
         return 0.0
@@ -166,7 +141,38 @@ def calculate_code_mixing_ratio(text: Optional[str], tokens: Optional[List[str]]
     if tokens is None:
         tokens = TextPreprocessor().tokenize(text_str)
 
-    # Filter for word tokens containing alphanumeric/script characters, excluding pure punctuation and pure emojis
+    total_tokens = len(tokens)
+    if total_tokens == 0:
+        return 0.0
+
+    matches = [m.group(0) for m in REPETITION_PATTERN.finditer(text_str)]
+    if not matches:
+        return 0.0
+
+    repeated_chars_count = sum(len(m) for m in matches)
+    ratio = repeated_chars_count / total_tokens
+    return min(1.0, max(0.0, float(ratio)))
+
+
+def calculate_code_mixing_ratio(text: Optional[str], tokens: Optional[List[str]] = None) -> float:
+    """Compute Code-Mixing Intensity C in [0, 1].
+
+    Formula:
+        C = min(Tokens_eng, Tokens_hin) / (max(Tokens_eng, Tokens_hin) + 1)
+
+    Measures code-mixing between English and Hindi/Hinglish word tokens.
+    Returns 0.0 for empty text, zero-token text, or monolingual text.
+    """
+    if text is None:
+        return 0.0
+    text_str = str(text).strip()
+    if not text_str:
+        return 0.0
+
+    if tokens is None:
+        tokens = TextPreprocessor().tokenize(text_str)
+
+    # Filter for word tokens containing alphanumeric characters, excluding pure punctuation and pure emojis
     word_tokens = [
         t for t in tokens
         if not all(c in PUNCTUATION_SYMBOLS for c in t) and emoji.emoji_count(t) == 0 and any(c.isalnum() for c in t)
@@ -176,7 +182,8 @@ def calculate_code_mixing_ratio(text: Optional[str], tokens: Optional[List[str]]
         return 0.0
 
     english_vocab = get_english_vocabulary()
-    codemix_count = 0
+    tokens_eng = 0
+    tokens_hin = 0
 
     for token in word_tokens:
         clean_tok = token.lower().strip(string.punctuation)
@@ -185,21 +192,26 @@ def calculate_code_mixing_ratio(text: Optional[str], tokens: Optional[List[str]]
 
         # Check Devanagari script presence or known Hinglish markers
         if DEVANAGARI_PATTERN.search(clean_tok) or clean_tok in HINGLISH_MARKERS:
-            codemix_count += 1
-        elif clean_tok not in english_vocab:
+            tokens_hin += 1
+        elif clean_tok in english_vocab:
+            tokens_eng += 1
+        else:
             # Token is an out-of-vocabulary / transliterated Hinglish word
-            codemix_count += 1
+            tokens_hin += 1
 
+    if tokens_eng == 0 and tokens_hin == 0:
+        return 0.0
 
-    ratio = codemix_count / len(word_tokens)
-    return min(1.0, max(0.0, float(ratio)))
+    c = min(tokens_eng, tokens_hin) / (max(tokens_eng, tokens_hin) + 1.0)
+    return min(1.0, max(0.0, float(c)))
 
 
 def calculate_symbol_density(text: Optional[str], tokens: Optional[List[str]] = None) -> float:
     """Compute Symbol Density S in [0, 1].
 
-    Measures the frequency of punctuation marks and symbols relative to total character length.
-    Returns 0.0 for empty or whitespace-only inputs.
+    Formula: S = Nsymbol / Ntokens
+    where Nsymbol is the number of non-alphanumeric tokens excluding emojis.
+    Returns 0.0 for empty or zero-token inputs.
     """
     if text is None:
         return 0.0
@@ -207,13 +219,19 @@ def calculate_symbol_density(text: Optional[str], tokens: Optional[List[str]] = 
     if not text_str:
         return 0.0
 
-    total_chars = len(text_str)
-    if total_chars == 0:
+    if tokens is None:
+        tokens = TextPreprocessor().tokenize(text_str)
+
+    total_tokens = len(tokens)
+    if total_tokens == 0:
         return 0.0
 
-    # Count symbol and punctuation characters (excluding standard whitespace and emojis)
-    symbol_count = sum(1 for c in text_str if c in PUNCTUATION_SYMBOLS)
-    density = symbol_count / total_chars
+    # Count non-alphanumeric tokens excluding emojis
+    symbol_count = sum(
+        1 for t in tokens
+        if not any(c.isalnum() for c in t) and emoji.emoji_count(t) == 0 and t.strip()
+    )
+    density = symbol_count / total_tokens
     return min(1.0, max(0.0, float(density)))
 
 
