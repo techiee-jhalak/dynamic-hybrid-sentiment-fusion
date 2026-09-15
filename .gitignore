@@ -34,6 +34,8 @@ share/python-wheels/
 # Data and Model Artifacts
 data/raw/*
 !data/raw/.gitkeep
+# SentiMix raw CoNLL files - do not commit (check redistribution terms first)
+data/raw/sentimix/
 data/processed/*
 !data/processed/.gitkeep
 saved_models/*
