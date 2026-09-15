@@ -1,33 +1,144 @@
-"""FastAPI application entry point."""
+"""FastAPI application entry point for the Dynamic Hybrid Sentiment Fusion API.
 
+Model lifecycle
+---------------
+All ML models (VADER, DistilBERT, router, preprocessor) are loaded once
+during the ``lifespan`` startup phase via ``ModelManager.initialize()``.
+They are never reloaded per-request.
+
+CORS
+----
+Allowed origins are read from the ``CORS_ORIGINS`` environment variable
+(comma-separated list). When the variable is unset the server defaults to
+``http://localhost:3000`` (typical React/Vite dev server) so that the
+existing frontend works out of the box without hardcoding broad access.
+
+Set ``CORS_ORIGINS=*`` only for local development; in production supply
+the exact frontend domain.
+"""
+
+from __future__ import annotations
+
+import logging
+import os
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from typing import AsyncGenerator, List
+
+from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+
+from src.api.dependencies import ModelManager
 from src.api.routes import router
 
+# ---------------------------------------------------------------------------
+# Logging
+# ---------------------------------------------------------------------------
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)-8s | %(name)s — %(message)s",
+)
+logger = logging.getLogger(__name__)
+
+
+# ---------------------------------------------------------------------------
+# CORS configuration from environment
+# ---------------------------------------------------------------------------
+
+def _get_cors_origins() -> List[str]:
+    """Read allowed origins from ``CORS_ORIGINS`` environment variable.
+
+    Returns a list of origin strings. Falls back to localhost:3000 when
+    the variable is not set so the dev frontend works without configuration.
+    """
+    raw = os.environ.get("CORS_ORIGINS", "http://localhost:3000")
+    origins = [o.strip() for o in raw.split(",") if o.strip()]
+    return origins if origins else ["http://localhost:3000"]
+
+
+# ---------------------------------------------------------------------------
+# Application lifespan — load models once on startup
+# ---------------------------------------------------------------------------
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
-    """Lifecycle manager to load models once on startup."""
-    # Initialization placeholder
-    yield
-    # Cleanup placeholder
+async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
+    """Load all ML models once at startup; release on shutdown."""
+    logger.info("Application startup: initialising ML models...")
+    try:
+        ModelManager.initialize()
+        logger.info("ML models ready. API is accepting requests.")
+    except RuntimeError as exc:
+        # Startup failure is fatal — log and re-raise so uvicorn exits cleanly.
+        logger.critical("Startup failed: %s", exc)
+        raise
 
+    yield  # application runs
+
+    logger.info("Application shutdown: releasing model references.")
+    ModelManager.shutdown()
+
+
+# ---------------------------------------------------------------------------
+# FastAPI application
+# ---------------------------------------------------------------------------
 
 app = FastAPI(
     title="Dynamic Noise-Aware Lexicon-Transformer Sentiment Fusion API",
-    description="Research-grade sentiment analysis system for code-mixed social media text.",
+    description=(
+        "Research-grade binary sentiment analysis for code-mixed social media text. "
+        "Implements the Dynamic Hybrid Fusion framework: "
+        "VADER + DistilBERT with noise-aware adaptive routing (α ∈ [0.02, 0.25]).\n\n"
+        "**Endpoints**\n"
+        "- `GET /api/health` — liveness / readiness check\n"
+        "- `POST /api/predict` — minimal prediction (sentiment, final_score, α, N)\n"
+        "- `POST /api/analyze` — full explainability breakdown\n"
+    ),
     version="1.0.0",
     lifespan=lifespan,
+    docs_url="/docs",
+    redoc_url="/redoc",
+    openapi_url="/openapi.json",
 )
 
-# CORS configuration for decoupled frontend communication
+# ---------------------------------------------------------------------------
+# CORS middleware
+# ---------------------------------------------------------------------------
+
+_cors_origins = _get_cors_origins()
+logger.info("CORS allowed origins: %s", _cors_origins)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_cors_origins,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
 )
+
+
+# ---------------------------------------------------------------------------
+# Global exception handler — prevent stack traces leaking to clients
+# ---------------------------------------------------------------------------
+
+@app.exception_handler(Exception)
+async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    """Catch-all handler that returns a structured JSON error without exposing internals."""
+    logger.error(
+        "Unhandled exception on %s %s [%s]: %s",
+        request.method,
+        request.url.path,
+        type(exc).__name__,
+        str(exc),
+    )
+    return JSONResponse(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content={"detail": "An internal server error occurred.", "code": "INTERNAL_ERROR"},
+    )
+
+
+# ---------------------------------------------------------------------------
+# Router registration
+# ---------------------------------------------------------------------------
 
 app.include_router(router, prefix="/api")
