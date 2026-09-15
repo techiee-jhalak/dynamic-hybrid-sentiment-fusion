@@ -32,33 +32,61 @@ Research-grade sentiment analysis framework for code-mixed social media text (Hi
 
 ```
 dynamic-hybrid-sentiment-fusion/
-├── configs/
-│   ├── config.py             # Central dataclass configuration
-│   └── config.yaml           # YAML configuration
+├── configs/                  # Global system configuration
 ├── src/
-│   ├── data/                 # Ingestion, preprocessing, and stratified splits
-│   ├── features/             # Noise quantification (E, R, C, S -> N)
-│   ├── models/               # VADER, DistilBERT, AdaptiveRouter, DynamicFusion
-│   ├── evaluation/           # Metric computation (Accuracy, F1, Confusion Matrix)
+│   ├── data/                 # Ingestion and preprocessing
+│   ├── features/             # Noise quantification pipeline
+│   ├── models/               # Architecture (VADER, DistilBERT, Routing)
+│   ├── evaluation/           # Evaluation and testing suite
 │   └── api/                  # FastAPI backend service
+├── frontend/                 # UI dashboard for model explainability
 ├── tests/                    # Unit and integration test suite
 ├── pyproject.toml            # Project dependencies and packaging
-├── verify_env.py             # Environment verification script
-└── PROJECT_SPEC.md           # Research and system specification
+├── PROJECT_SPEC.md           # Research and system specification
+└── FINAL_AUDIT.md            # Final implementation verification status
 ```
 
 ---
 
-## 3. Environment Setup
+## 3. Environment Setup & Testing
 
 ### 3.1 Requirements
 - Python 3.11+
-- Core ML Stack:
-  - `numpy`, `pandas`, `scikit-learn`, `nltk`
-  - `torch`, `transformers`, `datasets`, `accelerate`
+- Install backend and development dependencies via `pyproject.toml`.
 
-### 3.2 Verification
-Run the environment verification script:
 ```bash
-python verify_env.py
+pip install -e ".[dev]"
 ```
+
+### 3.2 Verification & Testing
+Run the complete unit and integration test suite (ensures research integrity without running full model training):
+```bash
+python -m pytest -q
+```
+
+---
+
+## 4. API & Frontend
+
+### FastAPI Backend
+The project exposes a highly structured API for predictions and explainability.
+
+Start the backend:
+```bash
+python -m uvicorn src.api.app:app --reload
+```
+- `GET /api/health`: Service readiness
+- `POST /api/predict`: Returns minimal prediction parameters.
+- `POST /api/analyze`: Returns the full component decomposition (E, R, C, S, N, router trace).
+
+### Explainability UI
+A professional, minimal HTML5/JS frontend is provided to visualize the adaptive fusion mechanics.
+- Open `frontend/index.html` in any browser to query the running API.
+
+---
+
+## 5. Experiment Status
+
+The underlying architecture for extracting statistical evaluations (Accuracy, Precision, Recall, McNemar's Test, Error Analysis) is fully implemented in `src/evaluation`. The experimental suite is designed to parse real model weights, and does not invent mock metric strings when the dataset/checkpoint is unavailable. 
+
+> *Note: Model training and evaluation over the raw sentiment dataset are configured but marked as `NOT RUN` pending actual dataset population and DistilBERT fine-tuning execution.*

@@ -15,9 +15,6 @@ import os
 from unittest.mock import MagicMock, patch
 
 import pytest
-
-fastapi = pytest.importorskip("fastapi")
-pytest.importorskip("pydantic")
 from fastapi.testclient import TestClient
 
 from src.api.app import app
@@ -185,26 +182,26 @@ def test_analyze_low_noise_explanation(mock_pipeline):
 # Validation Tests
 # ---------------------------------------------------------------------------
 
-def test_validation_empty_text():
+def test_validation_empty_text(mock_pipeline):
     response = client.post("/api/predict", json={"text": ""})
     assert response.status_code == 422
     assert "String should have at least 1 character" in response.text
 
 
-def test_validation_blank_text():
+def test_validation_blank_text(mock_pipeline):
     response = client.post("/api/predict", json={"text": "   \n\t  "})
     assert response.status_code == 422
     assert "text must not be blank or whitespace-only" in response.text
 
 
-def test_validation_exceeds_max_length():
+def test_validation_exceeds_max_length(mock_pipeline):
     text = "A" * (_MAX_TEXT_CHARS + 1)
     response = client.post("/api/predict", json={"text": text})
     assert response.status_code == 422
     assert "String should have at most" in response.text
 
 
-def test_validation_missing_text_field():
+def test_validation_missing_text_field(mock_pipeline):
     response = client.post("/api/predict", json={"something_else": "test"})
     assert response.status_code == 422
     assert "Field required" in response.text
@@ -231,7 +228,9 @@ def test_global_exception_handler_returns_500():
 
     app.dependency_overrides[get_pipeline] = failing_dependency
 
-    response = client.post("/api/predict", json={"text": "test"})
+    # Disable TestClient raising exceptions to test the 500 handler
+    error_client = TestClient(app, raise_server_exceptions=False)
+    response = error_client.post("/api/predict", json={"text": "test"})
     assert response.status_code == 500
     data = response.json()
     assert data["detail"] == "An internal server error occurred."
