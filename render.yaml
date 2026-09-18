@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: dynamic-hybrid-sentiment-fusion
+    runtime: python
+    # Render auto-detects pyproject.toml and may invoke Poetry.
+    # Explicit buildCommand forces pip so Poetry is never used.
+    buildCommand: "pip install --upgrade pip && pip install -r requirements.txt"
+    startCommand: "uvicorn src.api.app:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11"
+      - key: CORS_ORIGINS
+        value: "*"

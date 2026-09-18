@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "dynamic-hybrid-sentiment-fusion"
 version = "0.1.0"
-description = "Dynamic Noise-Aware Lexicon–Transformer Fusion Framework for Sentiment Analysis of Code-Mixed Social Media Text"
+description = "Dynamic Noise-Aware Lexicon-Transformer Fusion Framework for Sentiment Analysis of Code-Mixed Social Media Text"
 readme = "README.md"
 requires-python = ">=3.11"
 authors = [
@@ -32,6 +32,12 @@ dependencies = [
 dev = [
     "pytest>=7.4.0",
 ]
+
+[tool.poetry]
+# Disables Poetry's attempt to install this project as a Python package.
+# This project is an application (src/api/, src/models/, frontend/) and
+# does not need to be distributed as a package named dynamic-hybrid-sentiment-fusion.
+package-mode = false
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
