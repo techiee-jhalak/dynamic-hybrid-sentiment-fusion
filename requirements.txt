@@ -1,8 +1,8 @@
 # Dynamic Hybrid Sentiment Fusion — Production Dependencies
-# Used by Render (and any pip-based deployment) for reproducible installs.
+# Used by Docker (Railway) and any pip-based deployment for reproducible installs.
 #
-# CPU-ONLY PyTorch: Render has no GPU. The --extra-index-url below allows pip
-# to find the CPU-only torch wheel (~200 MB instead of ~2.5 GB with CUDA/cuDNN).
+# CPU-ONLY PyTorch: no GPU on Railway free tier.
+# The --extra-index-url below lets pip find the +cpu wheel (~200 MB vs ~2.5 GB CUDA).
 --extra-index-url https://download.pytorch.org/whl/cpu
 torch==2.14.0+cpu
 

@@ -1,0 +1,54 @@
+# .dockerignore — Railway / Docker build exclusions
+#
+# IMPORTANT: saved_models/ is deliberately NOT listed here.
+# The trained checkpoint (saved_models/sentimix_distilbert_best/) must be
+# baked into the image so ModelManager can load it without a Hub download.
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*$py.class
+
+# Git metadata
+.git/
+.github/
+.gitignore
+
+# Development / CI
+tests/
+tests/__pycache__/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local environment / secrets
+.env
+.env.*
+!.env.example
+
+# IDE / editor artefacts
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS artefacts
+.DS_Store
+Thumbs.db
+
+# Large raw / processed data (not needed for inference)
+data/raw/
+data/processed/
+
+# Build / packaging artefacts
+build/
+dist/
+*.egg-info/
