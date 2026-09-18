@@ -170,15 +170,26 @@ app.include_router(router)
 # ---------------------------------------------------------------------------
 
 frontend_dir = Path(__file__).resolve().parent.parent.parent / "frontend"
+if not frontend_dir.exists():
+    cwd_frontend = Path.cwd() / "frontend"
+    if cwd_frontend.exists():
+        frontend_dir = cwd_frontend
+
 if frontend_dir.exists():
     @app.get("/", include_in_schema=False)
     async def serve_frontend():
         return FileResponse(frontend_dir / "index.html")
 
+    @app.get("/index.html", include_in_schema=False)
+    async def serve_index():
+        return FileResponse(frontend_dir / "index.html")
+
     @app.get("/styles.css", include_in_schema=False)
     async def serve_css():
-        return FileResponse(frontend_dir / "styles.css")
+        return FileResponse(frontend_dir / "styles.css", media_type="text/css")
 
     @app.get("/app.js", include_in_schema=False)
     async def serve_js():
-        return FileResponse(frontend_dir / "app.js")
+        return FileResponse(frontend_dir / "app.js", media_type="application/javascript")
+
+    app.mount("/", StaticFiles(directory=str(frontend_dir), html=True), name="frontend")

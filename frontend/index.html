@@ -1,233 +1,706 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic Hybrid Sentiment Fusion</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hybrid Sentiment Intelligence — Dynamic Fusion</title>
+  <meta name="description" content="Dreamy Winter AI for code-mixed Hinglish sentiment analysis. Real-time dynamic fusion of VADER and multilingual DistilBERT with adaptive noise quantification.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <h1>Dynamic Hybrid Sentiment Fusion</h1>
-            <p class="subtitle">Noise-Aware Sentiment Analysis for Code-Mixed Social Media Text</p>
-        </header>
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Text Input Section -->
-            <section class="input-section" aria-label="Text Input">
-                <div class="input-header">
-                    <label for="text-input">Enter text to analyze:</label>
-                    <span id="char-count" class="char-count" aria-live="polite">0 / 2048</span>
-                </div>
-                <textarea 
-                    id="text-input" 
-                    placeholder="Yeh movie bohot achhi hai yaar! 😊🔥"
-                    maxlength="2048"
-                    rows="4"
-                    aria-label="Input text for sentiment analysis"
-                ></textarea>
-                
-                <div class="action-buttons">
-                    <button id="analyze-btn" class="btn btn-primary" type="button">ANALYZE SENTIMENT</button>
-                    <button id="clear-btn" class="btn btn-secondary" type="button">Clear</button>
-                </div>
-                
-                <!-- Loading and Error States -->
-                <div id="loading-state" class="state-message loading hidden" aria-live="polite">
-                    <div class="spinner"></div>
-                    <span>Analyzing sentiment with real SentiMix model...</span>
-                </div>
-                <div id="error-state" class="state-message error hidden" aria-live="assertive"></div>
-            </section>
+  <!-- ═══════════════════════════════════════════
+       SNOW CANVAS (fixed layer behind UI)
+  ═══════════════════════════════════════════ -->
+  <canvas id="snow-canvas" aria-hidden="true"></canvas>
 
-            <!-- Results Dashboard (Hidden by default) -->
-            <section id="results-dashboard" class="results-dashboard hidden" aria-label="Analysis Results">
-                
-                <!-- Core Result -->
-                <div class="card core-result">
-                    <h2>Sentiment Analysis Result</h2>
-                    <div class="result-highlight">
-                        <div class="sentiment-container">
-                            <span class="result-label-mini">PREDICTED SENTIMENT</span>
-                            <span id="sentiment-badge" class="badge">--</span>
-                        </div>
-                        <div class="result-score">
-                            <span class="score-value" id="confidence-value">--%</span>
-                            <span class="score-label">Confidence</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Model Contributions (3-Class Probability Distributions) -->
-                <div class="card model-contributions">
-                    <h3>Model Contributions & Vector Distributions</h3>
-                    <p class="section-subtext">Comparing class probabilities across lexicon prior, transformer contextual model, and fused distribution.</p>
-                    
-                    <div class="vector-distributions">
-                        <!-- Final Fusion Row -->
-                        <div class="vector-row highlight-row">
-                            <div class="vector-header">
-                                <span class="vector-title">Final Fused Prediction</span>
-                                <span class="vector-meta">Dynamic Weighted Combination</span>
-                            </div>
-                            <div class="prob-bars-container">
-                                <div class="prob-group">
-                                    <div class="prob-label"><span>Positive</span><span id="fused-pos">0.0%</span></div>
-                                    <div class="prob-track"><div id="bar-fused-pos" class="prob-bar pos-bar" style="width: 0%"></div></div>
-                                </div>
-                                <div class="prob-group">
-                                    <div class="prob-label"><span>Negative</span><span id="fused-neg">0.0%</span></div>
-                                    <div class="prob-track"><div id="bar-fused-neg" class="prob-bar neg-bar" style="width: 0%"></div></div>
-                                </div>
-                                <div class="prob-group">
-                                    <div class="prob-label"><span>Neutral</span><span id="fused-neu">0.0%</span></div>
-                                    <div class="prob-track"><div id="bar-fused-neu" class="prob-bar neu-bar" style="width: 0%"></div></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- DistilBERT Row -->
-                        <div class="vector-row">
-                            <div class="vector-header">
-                                <span class="vector-title">DistilBERT (Fine-Tuned)</span>
-                                <span class="vector-meta" id="distilbert-weight-label">Weight: 1−α = 0.980</span>
-                            </div>
-                            <div class="prob-bars-container">
-                                <div class="prob-group">
-                                    <div class="prob-label"><span>Positive</span><span id="distil-pos">0.0%</span></div>
-                                    <div class="prob-track"><div id="bar-distil-pos" class="prob-bar pos-bar" style="width: 0%"></div></div>
-                                </div>
-                                <div class="prob-group">
-                                    <div class="prob-label"><span>Negative</span><span id="distil-neg">0.0%</span></div>
-                                    <div class="prob-track"><div id="bar-distil-neg" class="prob-bar neg-bar" style="width: 0%"></div></div>
-                                </div>
-                                <div class="prob-group">
-                                    <div class="prob-label"><span>Neutral</span><span id="distil-neu">0.0%</span></div>
-                                    <div class="prob-track"><div id="bar-distil-neu" class="prob-bar neu-bar" style="width: 0%"></div></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- VADER Row -->
-                        <div class="vector-row">
-                            <div class="vector-header">
-                                <span class="vector-title">VADER (3-Class Adapter)</span>
-                                <span class="vector-meta" id="vader-weight-label">Weight: α = 0.020</span>
-                            </div>
-                            <div class="prob-bars-container">
-                                <div class="prob-group">
-                                    <div class="prob-label"><span>Positive</span><span id="vader-pos">0.0%</span></div>
-                                    <div class="prob-track"><div id="bar-vader-pos" class="prob-bar pos-bar" style="width: 0%"></div></div>
-                                </div>
-                                <div class="prob-group">
-                                    <div class="prob-label"><span>Negative</span><span id="vader-neg">0.0%</span></div>
-                                    <div class="prob-track"><div id="bar-vader-neg" class="prob-bar neg-bar" style="width: 0%"></div></div>
-                                </div>
-                                <div class="prob-group">
-                                    <div class="prob-label"><span>Neutral</span><span id="vader-neu">0.0%</span></div>
-                                    <div class="prob-track"><div id="bar-vader-neu" class="prob-bar neu-bar" style="width: 0%"></div></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Explainability Grid -->
-                <div class="explainability-grid">
-                    
-                    <!-- Dynamic Fusion Details -->
-                    <div class="card fusion-details">
-                        <h3>Dynamic Routing</h3>
-                        <div class="metrics-list">
-                            <div class="metric-row">
-                                <span class="metric-name">Routing Weight (α)</span>
-                                <span class="metric-value highlight-text" id="alpha-value">0.020</span>
-                            </div>
-                            <div class="metric-row">
-                                <span class="metric-name">VADER Contribution</span>
-                                <span class="metric-value" id="vader-contrib">2.0%</span>
-                            </div>
-                            <div class="metric-row">
-                                <span class="metric-name">DistilBERT Contribution</span>
-                                <span class="metric-value" id="distil-contrib">98.0%</span>
-                            </div>
-                            <div class="metric-row formula-row">
-                                <em>α controls the contribution of the VADER lexical model; 1−α controls the contribution of DistilBERT.</em>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Noise Analysis -->
-                    <div class="card noise-analysis">
-                        <h3>Noise Analysis</h3>
-                        <div class="noise-band-display">
-                            <span class="noise-label">Band:</span>
-                            <span id="noise-band" class="badge noise-badge">--</span>
-                        </div>
-                        
-                        <div class="progress-bar-container">
-                            <div class="progress-label">
-                                <span>Composite Noise (N)</span>
-                                <span id="composite-noise">0.000</span>
-                            </div>
-                            <div class="progress-track">
-                                <div id="noise-progress" class="progress-fill" style="width: 0%"></div>
-                            </div>
-                        </div>
-                        
-                        <div class="metrics-list noise-components">
-                            <div class="metric-row">
-                                <span class="metric-name" title="Emoji count / max(token_count, 1)">Emoji Density (E)</span>
-                                <span class="metric-value" id="emoji-density">0.000</span>
-                            </div>
-                            <div class="metric-row">
-                                <span class="metric-name" title="Elongated-character token ratio">Repetition Score (R)</span>
-                                <span class="metric-value" id="repetition-ratio">0.000</span>
-                            </div>
-                            <div class="metric-row">
-                                <span class="metric-name" title="Hinglish code-mixing token ratio">Code-Mixing Ratio (C)</span>
-                                <span class="metric-value" id="codemix-intensity">0.000</span>
-                            </div>
-                            <div class="metric-row">
-                                <span class="metric-name" title="Special-symbol token ratio">Symbol Density (S)</span>
-                                <span class="metric-value" id="symbol-density">0.000</span>
-                            </div>
-                        </div>
-                    </div>
-
-                </div> <!-- End Explainability Grid -->
-
-                <!-- Router Explanation -->
-                <div class="card router-explanation">
-                    <h3>Adaptive Router Decision</h3>
-                    <p id="router-text" class="explanation-text">--</p>
-                </div>
-
-                <!-- Technical Details Accordion -->
-                <details class="technical-details">
-                    <summary>Technical Details & Architecture</summary>
-                    <div class="details-content">
-                        <ul>
-                            <li><strong>Dataset & Architecture:</strong> SemEval-2020 Task 9 (SentiMix Hinglish) 3-Class Dynamic Hybrid Fusion</li>
-                            <li><strong>Components:</strong> VADER Lexicon 3-Class Adapter + DistilBERT Sequence Classifier (Fine-Tuned)</li>
-                            <li><strong>Noise Quantification Module (NQM):</strong> <code>N = 0.25·E + 0.25·R + 0.30·C + 0.20·S</code></li>
-                            <li><strong>Adaptive Router:</strong> If <code>N ≤ 0.20</code>, <code>α = 0.02</code>. Else <code>α = clamp(σ(z), 0.02, 0.25)</code> where <code>z = 0.05·(20 - L) + 12.0·N</code></li>
-                            <li><strong>3-Class Vector Fusion:</strong> <code>P_final = α·P_VADER + (1-α)·P_DistilBERT</code>; <code>prediction = argmax(P_final)</code></li>
-                            <li><strong>Tokens (L):</strong> <span id="token-length">--</span></li>
-                        </ul>
-                    </div>
-                </details>
-
-            </section>
-        </main>
+  <!-- ═══════════════════════════════════════════
+       FLOATING FROSTED NAVIGATION
+  ═══════════════════════════════════════════ -->
+  <nav class="floating-nav" role="navigation" aria-label="Main navigation">
+    <div class="nav-logo">
+      <span class="nav-star" aria-hidden="true">✦</span>
+      <span class="nav-brand">HYBRID</span>
     </div>
-    
-    <script src="app.js"></script>
+    <div class="nav-links">
+      <a href="#analysis-section" class="nav-link active">Analyze</a>
+      <a href="#intelligence-section" class="nav-link">Intelligence</a>
+      <a href="#observatory" class="nav-link">Observatory</a>
+    </div>
+    <div class="nav-status">
+      <span class="status-dot" aria-hidden="true"></span>
+      <span class="status-text">Model Online</span>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════
+       MAIN WRAPPER / EDITORIAL CONTAINER
+  ═══════════════════════════════════════════ -->
+  <main class="page-container">
+
+    <!-- ── HERO & AI CORE ── -->
+    <header class="hero-section" id="hero">
+      
+      <!-- Ethereal AI Core Visual -->
+      <div class="ai-core-container">
+        <div class="ai-core" id="ai-core" aria-label="Adaptive Fusion AI Core">
+          <div class="core-halo"></div>
+          <div class="core-orbit orbit-1">
+            <span class="orbit-particle p1">✦</span>
+            <span class="orbit-particle p2">•</span>
+          </div>
+          <div class="core-orbit orbit-2">
+            <span class="orbit-particle p3">✦</span>
+            <span class="orbit-particle p4">•</span>
+          </div>
+          <div class="core-orbit orbit-3">
+            <span class="orbit-particle p5">•</span>
+          </div>
+          <div class="core-nucleus">
+            <div class="core-light"></div>
+            <div class="core-center-point"></div>
+          </div>
+        </div>
+        <div class="core-caption">FUSION ENGINE</div>
+      </div>
+
+      <!-- Hero Typography -->
+      <div class="hero-header">
+        <div class="hero-eyebrow">
+          <span class="eyebrow-sparkle">✦</span>
+          <span>DYNAMIC SENTIMENT INTELLIGENCE</span>
+          <span class="eyebrow-sparkle">✦</span>
+        </div>
+        <h1 class="hero-title">
+          Understand the signal.<br>
+          <span class="hero-title-gradient">Decode the sentiment.</span>
+        </h1>
+        <p class="hero-subtitle">
+          Where noisy code-mixed language meets adaptive intelligence.
+        </p>
+      </div>
+    </header>
+
+    <!-- ── ANALYSIS CONSOLE (Visual Centerpiece) ── -->
+    <section class="console-section" id="analysis-section" aria-label="Sentiment Analysis Console">
+      <div class="console-panel">
+        
+        <div class="console-top-bar">
+          <div class="console-title-group">
+            <h2 class="console-title">Analyze a message</h2>
+            <p class="console-subtitle">Paste code-mixed Hinglish text and let the hybrid engine interpret it.</p>
+          </div>
+          <div class="console-model-badge">
+            <span class="badge-dot"></span>
+            <span>DistilBERT + VADER Hybrid</span>
+          </div>
+        </div>
+
+        <!-- Sample prompt chips -->
+        <div class="sample-chips" aria-label="Example Hinglish prompts">
+          <span class="chips-label">Try:</span>
+          <button type="button" class="chip-btn" data-text="Yeh movie bohot achhi hai yaar! 😊🔥">Movie review 😊🔥</button>
+          <button type="button" class="chip-btn" data-text="Worst service ever, bilkul bakwas experience tha 😡">Service review 😡</button>
+          <button type="button" class="chip-btn" data-text="Bhai itna confusing ending kyu banaya??? 😭🤦‍♂️">Confusing ending 😭</button>
+          <button type="button" class="chip-btn" data-text="The package arrived today, check karna padega kal subah.">Neutral inquiry</button>
+        </div>
+
+        <div class="textarea-wrapper">
+          <textarea
+            id="text-input"
+            class="console-textarea"
+            placeholder="Yeh movie bohot achhi hai yaar! 😊🔥"
+            maxlength="2048"
+            rows="4"
+            aria-label="Enter code-mixed Hinglish text for sentiment analysis"
+            spellcheck="false"
+          ></textarea>
+        </div>
+
+        <div class="console-bottom-bar">
+          <div class="char-count-wrap">
+            <span id="char-count" class="char-count" aria-live="polite">0 / 2048</span>
+          </div>
+          
+          <div class="console-actions">
+            <button id="clear-btn" class="btn-ghost" type="button" title="Clear input">Clear</button>
+            <button id="analyze-btn" class="btn-analyze" type="button">
+              <span class="btn-analyze-glow"></span>
+              <span class="btn-analyze-text">Analyze</span>
+              <span class="btn-analyze-arrow" aria-hidden="true">→</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Dynamic Loading State -->
+        <div id="loading-state" class="loading-state hidden" aria-live="polite">
+          <div class="loading-spinner-rings">
+            <div class="spinner-ring"></div>
+            <div class="spinner-core"></div>
+          </div>
+          <div class="loading-text-container">
+            <span id="loading-label" class="loading-label">Analyzing signal…</span>
+            <span class="loading-dots">...</span>
+          </div>
+        </div>
+
+        <!-- Error State -->
+        <div id="error-state" class="error-state hidden" aria-live="assertive"></div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         RESULTS (Revealed on analysis)
+    ═══════════════════════════════════════════ -->
+    <section id="results" class="results-section hidden" aria-label="Analysis Results">
+
+      <!-- ── SECTION ANCHOR ── -->
+      <div class="results-anchor" id="intelligence-section">
+        <span class="anchor-glow">✦</span>
+        <span class="anchor-title">INTELLIGENCE BREAKDOWN</span>
+        <span class="anchor-line"></span>
+      </div>
+
+      <!-- ── ROW 1: THE INTELLIGENCE TRIAD ── -->
+      <div class="results-grid-triad">
+
+        <!-- CARD 1: MAIN SENTIMENT SIGNAL (Asymmetric Hero Card) -->
+        <div class="result-card card-sentiment">
+          <div class="card-header">
+            <span class="card-tag">PREDICTION</span>
+            <span class="card-eyebrow">SENTIMENT SIGNAL</span>
+          </div>
+
+          <div class="sentiment-primary-display">
+            <div id="sentiment-badge" class="sentiment-badge neutral">NEUTRAL</div>
+            <div id="confidence-quality" class="confidence-quality-badge">Confidence Assessment</div>
+          </div>
+
+          <!-- Minimal Glowing Confidence Ring -->
+          <div class="confidence-ring-container">
+            <div class="ring-svg-wrapper">
+              <svg class="confidence-ring-svg" viewBox="0 0 140 140" aria-hidden="true">
+                <circle class="ring-bg" cx="70" cy="70" r="58" />
+                <circle id="ring-fill" class="ring-progress" cx="70" cy="70" r="58"
+                        stroke-dasharray="364.4"
+                        stroke-dashoffset="364.4" />
+              </svg>
+              <div class="ring-center-content">
+                <span id="confidence-pct" class="confidence-number">0.0%</span>
+                <span class="confidence-label">confidence</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 2: SIGNAL DISTRIBUTION (Horizontal Streams) -->
+        <div class="result-card card-distribution">
+          <div class="card-header">
+            <span class="card-tag">PROBABILITY</span>
+            <span class="card-eyebrow">SIGNAL DISTRIBUTION</span>
+          </div>
+          <p class="card-caption">Fused probability vector across 3 target sentiment classes.</p>
+
+          <div class="signal-streams">
+            <!-- Positive Stream -->
+            <div class="stream-item">
+              <div class="stream-meta">
+                <span class="stream-name name-positive">
+                  <span class="stream-bullet bullet-pos"></span> POSITIVE
+                </span>
+                <span id="val-fused-pos" class="stream-percent">0.0%</span>
+              </div>
+              <div class="stream-track">
+                <div id="bar-fused-pos" class="stream-bar bar-positive" style="width: 0%"></div>
+              </div>
+            </div>
+
+            <!-- Negative Stream -->
+            <div class="stream-item">
+              <div class="stream-meta">
+                <span class="stream-name name-negative">
+                  <span class="stream-bullet bullet-neg"></span> NEGATIVE
+                </span>
+                <span id="val-fused-neg" class="stream-percent">0.0%</span>
+              </div>
+              <div class="stream-track">
+                <div id="bar-fused-neg" class="stream-bar bar-negative" style="width: 0%"></div>
+              </div>
+            </div>
+
+            <!-- Neutral Stream -->
+            <div class="stream-item">
+              <div class="stream-meta">
+                <span class="stream-name name-neutral">
+                  <span class="stream-bullet bullet-neu"></span> NEUTRAL
+                </span>
+                <span id="val-fused-neu" class="stream-percent">0.0%</span>
+              </div>
+              <div class="stream-track">
+                <div id="bar-fused-neu" class="stream-bar bar-neutral" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Per-Model Vector Breakdown (Drawer) -->
+          <details class="model-vectors-drawer">
+            <summary class="drawer-summary">
+              <span>View Individual Model Vectors</span>
+              <span class="drawer-arrow">▾</span>
+            </summary>
+            <div class="drawer-content">
+              <div class="subvector-col">
+                <span class="subvector-title">DistilBERT (Contextual)</span>
+                <div class="subvector-bars">
+                  <div class="subbar-row"><span>POS</span><div class="sub-track"><div id="bar-distil-pos" class="sub-fill pos" style="width: 0%"></div></div><span id="val-distil-pos">0%</span></div>
+                  <div class="subbar-row"><span>NEG</span><div class="sub-track"><div id="bar-distil-neg" class="sub-fill neg" style="width: 0%"></div></div><span id="val-distil-neg">0%</span></div>
+                  <div class="subbar-row"><span>NEU</span><div class="sub-track"><div id="bar-distil-neu" class="sub-fill neu" style="width: 0%"></div></div><span id="val-distil-neu">0%</span></div>
+                </div>
+              </div>
+              <div class="subvector-col">
+                <span class="subvector-title">VADER (Lexical)</span>
+                <div class="subvector-bars">
+                  <div class="subbar-row"><span>POS</span><div class="sub-track"><div id="bar-vader-pos" class="sub-fill pos" style="width: 0%"></div></div><span id="val-vader-pos">0%</span></div>
+                  <div class="subbar-row"><span>NEG</span><div class="sub-track"><div id="bar-vader-neg" class="sub-fill neg" style="width: 0%"></div></div><span id="val-vader-neg">0%</span></div>
+                  <div class="subbar-row"><span>NEU</span><div class="sub-track"><div id="bar-vader-neu" class="sub-fill neu" style="width: 0%"></div></div><span id="val-vader-neu">0%</span></div>
+                </div>
+              </div>
+            </div>
+          </details>
+        </div>
+
+        <!-- CARD 3: NOISE FIELD (Winter Telemetry Panel) -->
+        <div class="result-card card-noise">
+          <div class="card-header">
+            <span class="card-tag">TELEMETRY</span>
+            <span class="card-eyebrow">NOISE FIELD</span>
+          </div>
+
+          <div class="noise-telemetry-hero">
+            <div class="noise-main-metric">
+              <span id="noise-value" class="noise-large-number">0.000</span>
+              <span class="noise-scale-label">/ 1.000</span>
+            </div>
+            <div id="noise-band" class="noise-band-badge band-low">LOW</div>
+          </div>
+
+          <!-- Telemetry Meters -->
+          <div class="telemetry-meters">
+            <div class="meter-item">
+              <div class="meter-info">
+                <span class="meter-name">Emoji Density</span>
+                <span id="val-emoji" class="meter-val">0.0%</span>
+              </div>
+              <div class="meter-track">
+                <div id="meter-emoji" class="meter-fill" style="width: 0%"></div>
+              </div>
+            </div>
+
+            <div class="meter-item">
+              <div class="meter-info">
+                <span class="meter-name">Char Repetition</span>
+                <span id="val-rep" class="meter-val">0.0%</span>
+              </div>
+              <div class="meter-track">
+                <div id="meter-rep" class="meter-fill" style="width: 0%"></div>
+              </div>
+            </div>
+
+            <div class="meter-item">
+              <div class="meter-info">
+                <span class="meter-name">Code Mixing</span>
+                <span id="val-codemix" class="meter-val">0.0%</span>
+              </div>
+              <div class="meter-track">
+                <div id="meter-codemix" class="meter-fill" style="width: 0%"></div>
+              </div>
+            </div>
+
+            <div class="meter-item">
+              <div class="meter-info">
+                <span class="meter-name">Symbol Density</span>
+                <span id="val-symbol" class="meter-val">0.0%</span>
+              </div>
+              <div class="meter-track">
+                <div id="meter-symbol" class="meter-fill" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── ROW 2: FUSION ENGINE & INTERPRETATION ── -->
+      <div class="results-grid-architecture">
+
+        <!-- CARD 4: THE FUSION ENGINE (Interactive Architectural Flow) -->
+        <div class="result-card card-fusion">
+          <div class="card-header">
+            <span class="card-tag">ARCHITECTURE</span>
+            <span class="card-eyebrow">THE FUSION ENGINE</span>
+          </div>
+
+          <div class="fusion-architecture-visual">
+            
+            <!-- Upstream Models -->
+            <div class="upstream-models-row">
+              <div class="model-card vader-pill">
+                <div class="model-pill-header">
+                  <span class="model-type-dot lexical"></span>
+                  <span class="model-name">VADER</span>
+                </div>
+                <span class="model-desc">Lexical Rule Signal</span>
+              </div>
+
+              <div class="model-card distilbert-pill">
+                <div class="model-pill-header">
+                  <span class="model-type-dot contextual"></span>
+                  <span class="model-name">DistilBERT</span>
+                </div>
+                <span class="model-desc">Multilingual Contextual</span>
+              </div>
+            </div>
+
+            <!-- Dynamic Routing Flow Diagram -->
+            <div class="flow-diagram-container">
+              
+              <!-- Left connector: VADER -> Fusion -->
+              <div class="flow-branch branch-vader">
+                <div class="flow-line line-vader">
+                  <div class="flow-pulse pulse-vader"></div>
+                </div>
+                <div class="flow-weight-pill">
+                  <span class="pill-sym">α</span>
+                  <span id="alpha-label" class="pill-val">0.020</span>
+                </div>
+              </div>
+
+              <!-- Central Node: Adaptive Fusion -->
+              <div class="fusion-central-hub" id="fusion-hub">
+                <div class="hub-outer-ring"></div>
+                <div class="hub-core">
+                  <span class="hub-sparkle">✦</span>
+                  <span class="hub-text">FUSION</span>
+                </div>
+              </div>
+
+              <!-- Right connector: DistilBERT -> Fusion -->
+              <div class="flow-branch branch-distil">
+                <div class="flow-line line-distil">
+                  <div class="flow-pulse pulse-distil"></div>
+                </div>
+                <div class="flow-weight-pill">
+                  <span class="pill-sym">1−α</span>
+                  <span id="beta-label" class="pill-val">0.980</span>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Downstream Output -->
+            <div class="downstream-output-flow">
+              <div class="downstream-line">
+                <div class="downstream-pulse"></div>
+              </div>
+              <div class="final-signal-capsule">
+                <span class="signal-tag">FINAL PREDICTION VECTOR</span>
+                <code class="signal-formula">P<sub>final</sub> = α · P<sub>VADER</sub> + (1 − α) · P<sub>DistilBERT</sub></code>
+              </div>
+            </div>
+
+            <!-- Dynamic Weights Telemetry Grid -->
+            <div class="fusion-telemetry-grid">
+              <div class="fusion-telem-cell">
+                <span class="telem-label">Routing α</span>
+                <span id="routing-alpha" class="telem-val">0.020</span>
+              </div>
+              <div class="fusion-telem-cell">
+                <span class="telem-label">VADER Weight</span>
+                <span id="vader-weight" class="telem-val">2.0%</span>
+              </div>
+              <div class="fusion-telem-cell">
+                <span class="telem-label">DistilBERT Weight</span>
+                <span id="distil-weight" class="telem-val">98.0%</span>
+              </div>
+              <div class="fusion-telem-cell">
+                <span class="telem-label">Tokens (L)</span>
+                <span id="token-len" class="telem-val">--</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- CARD 5: MODEL INTERPRETATION (Plain English Summary) -->
+        <div class="result-card card-interpretation">
+          <div class="card-header">
+            <span class="card-tag">EXPLANATION</span>
+            <span class="card-eyebrow">MODEL INTERPRETATION</span>
+          </div>
+
+          <div class="interpretation-content">
+            <div class="interpretation-bubble">
+              <span class="quote-mark">“</span>
+              <p id="router-text" class="interpretation-text">
+                Input text will be evaluated by the noise quantifier and dynamic router once submitted.
+              </p>
+            </div>
+
+            <div class="interpretation-spec-list">
+              <div class="spec-row">
+                <span class="spec-label">Noise Quantification</span>
+                <span class="spec-value">N = 0.25·E + 0.25·R + 0.30·C + 0.20·S</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-label">Adaptive Policy</span>
+                <span class="spec-value">Low-noise α=0.02; Adaptive α clamped to [0.02, 0.25]</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-label">Decision Strategy</span>
+                <span class="spec-value">argmax(P<sub>final</sub>) across [Positive, Negative, Neutral]</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── ROW 3: RESEARCH OBSERVATORY & BENCHMARKS ── -->
+      <div class="result-card card-observatory" id="observatory">
+        
+        <div class="observatory-header">
+          <div>
+            <span class="card-tag">BENCHMARKS</span>
+            <h3 class="observatory-title">MODEL OBSERVATORY</h3>
+            <p class="observatory-subtitle">Empirical test evaluation on SemEval-2020 Task 9 (Hinglish, 3-class sentiment).</p>
+          </div>
+          <div class="observatory-badge">
+            <span class="badge-star">✦</span>
+            <span>Test Set: 3,000 Samples</span>
+          </div>
+        </div>
+
+        <!-- 4 Key Metric Tiles -->
+        <div class="observatory-metrics-grid">
+          <div class="obs-metric-tile">
+            <span class="obs-metric-label">Accuracy</span>
+            <span class="obs-metric-value highlight-pos">68.8%</span>
+            <span class="obs-metric-sub">0.6883 on test set</span>
+          </div>
+          <div class="obs-metric-tile">
+            <span class="obs-metric-label">Macro F1</span>
+            <span class="obs-metric-value highlight-ice">69.5%</span>
+            <span class="obs-metric-sub">0.6946 class-weighted</span>
+          </div>
+          <div class="obs-metric-tile">
+            <span class="obs-metric-label">Macro Precision</span>
+            <span class="obs-metric-value">71.2%</span>
+            <span class="obs-metric-sub">0.7124 precision</span>
+          </div>
+          <div class="obs-metric-tile">
+            <span class="obs-metric-label">Macro Recall</span>
+            <span class="obs-metric-value">68.8%</span>
+            <span class="obs-metric-sub">0.6879 recall</span>
+          </div>
+        </div>
+
+        <!-- Interactive Research Tabs -->
+        <div class="observatory-tabs-container">
+          <div class="obs-tab-nav" role="tablist">
+            <button class="obs-tab-btn active" role="tab" aria-selected="true" data-tab="tab-ablation">Ablation Study</button>
+            <button class="obs-tab-btn" role="tab" aria-selected="false" data-tab="tab-confusion">Confusion Matrix</button>
+            <button class="obs-tab-btn" role="tab" aria-selected="false" data-tab="tab-noise">Noise Sensitivity</button>
+            <button class="obs-tab-btn" role="tab" aria-selected="false" data-tab="tab-specs">Technical Details</button>
+          </div>
+
+          <div class="obs-tab-content">
+            
+            <!-- Tab 1: Ablation Study -->
+            <div id="tab-ablation" class="tab-panel active" role="tabpanel">
+              <div class="table-responsive">
+                <table class="obs-table">
+                  <thead>
+                    <tr>
+                      <th>Configuration</th>
+                      <th>Accuracy</th>
+                      <th>Macro F1</th>
+                      <th>Δ Macro F1</th>
+                      <th>Routing Strategy</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="row-highlight">
+                      <td><strong>Full Dynamic Fusion (Proposed)</strong></td>
+                      <td><strong>68.8%</strong></td>
+                      <td><strong>69.5%</strong></td>
+                      <td><span class="gain">+0.00% (Baseline)</span></td>
+                      <td>Adaptive α ∈ [0.02, 0.25] based on noise</td>
+                    </tr>
+                    <tr>
+                      <td>Static Fusion</td>
+                      <td>68.6%</td>
+                      <td>69.2%</td>
+                      <td><span class="loss">-0.28%</span></td>
+                      <td>Fixed α = 0.02 for all samples</td>
+                    </tr>
+                    <tr>
+                      <td>DistilBERT Only</td>
+                      <td>68.6%</td>
+                      <td>69.2%</td>
+                      <td><span class="loss">-0.29%</span></td>
+                      <td>α = 0.0 (No lexical fusion)</td>
+                    </tr>
+                    <tr>
+                      <td>VADER Only</td>
+                      <td>37.5%</td>
+                      <td>20.1%</td>
+                      <td><span class="loss">-49.37%</span></td>
+                      <td>α = 1.0 (Rule-based only)</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Tab 2: Confusion Matrix -->
+            <div id="tab-confusion" class="tab-panel" role="tabpanel">
+              <div class="cm-layout">
+                <div class="cm-table-wrap">
+                  <table class="cm-table">
+                    <thead>
+                      <tr>
+                        <th>Actual \ Predicted</th>
+                        <th>Positive</th>
+                        <th>Negative</th>
+                        <th>Neutral</th>
+                        <th>Support</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><strong>Positive</strong></td>
+                        <td class="cell-diag"><strong>663</strong> <span class="pct">(66.3%)</span></td>
+                        <td>35</td>
+                        <td>302</td>
+                        <td>1,000</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Negative</strong></td>
+                        <td>15</td>
+                        <td class="cell-diag"><strong>624</strong> <span class="pct">(69.3%)</span></td>
+                        <td>261</td>
+                        <td>900</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Neutral</strong></td>
+                        <td>113</td>
+                        <td>209</td>
+                        <td class="cell-diag"><strong>778</strong> <span class="pct">(70.7%)</span></td>
+                        <td>1,100</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="cm-summary">
+                  <div class="cm-stat"><span class="cm-stat-num">74.0%</span><span class="cm-stat-desc">Positive F1 Score</span></div>
+                  <div class="cm-stat"><span class="cm-stat-num">70.6%</span><span class="cm-stat-desc">Negative F1 Score</span></div>
+                  <div class="cm-stat"><span class="cm-stat-num">63.7%</span><span class="cm-stat-desc">Neutral F1 Score</span></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab 3: Noise Sensitivity -->
+            <div id="tab-noise" class="tab-panel" role="tabpanel">
+              <div class="table-responsive">
+                <table class="obs-table">
+                  <thead>
+                    <tr>
+                      <th>Noise Group</th>
+                      <th>Samples</th>
+                      <th>Percentage</th>
+                      <th>Dynamic F1</th>
+                      <th>DistilBERT F1</th>
+                      <th>Δ over DistilBERT</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><span class="band-tag low">LOW (N ≤ 0.20)</span></td>
+                      <td>1,634</td>
+                      <td>54.5%</td>
+                      <td>68.9%</td>
+                      <td>69.1%</td>
+                      <td>-0.20% (DistilBERT dominant)</td>
+                    </tr>
+                    <tr class="row-highlight">
+                      <td><span class="band-tag moderate">MODERATE (N &gt; 0.20)</span></td>
+                      <td>1,365</td>
+                      <td>45.5%</td>
+                      <td><strong>69.3%</strong></td>
+                      <td>68.8%</td>
+                      <td><span class="gain">+0.54% (Fusion advantage)</span></td>
+                    </tr>
+                    <tr>
+                      <td><span class="band-tag high">HIGH</span></td>
+                      <td>1</td>
+                      <td>0.03%</td>
+                      <td>100.0%</td>
+                      <td>100.0%</td>
+                      <td>0.00%</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Tab 4: Technical Specs -->
+            <div id="tab-specs" class="tab-panel" role="tabpanel">
+              <div class="specs-grid">
+                <div class="spec-card">
+                  <h4>DistilBERT Backbone</h4>
+                  <p>Fine-tuned <code>distilbert-base-multilingual-cased</code> on SemEval-2020 Task 9 train partition (14,000 code-mixed utterances). PyTorch CPU runtime.</p>
+                </div>
+                <div class="spec-card">
+                  <h4>VADER Adapter</h4>
+                  <p>Rule-based lexical sentiment engine mapped from [-1, 1] compound score into a normalized 3-class probability distribution vector via softmax temperature scaling.</p>
+                </div>
+                <div class="spec-card">
+                  <h4>Noise Metric (NQM)</h4>
+                  <p>Multidimensional surface: <code>N = 0.25·E + 0.25·R + 0.30·C + 0.20·S</code> assessing Emoji density, Character repetition, Script code-mixing, and Symbol noise.</p>
+                </div>
+                <div class="spec-card">
+                  <h4>Dynamic Router</h4>
+                  <p>Sigmoid router: <code>α = σ(w_N·N + w_L·L + b)</code> clamped to <code>[0.02, 0.25]</code>. When N ≤ 0.20, router defaults to <code>α = 0.02</code> preserving transformer fidelity.</p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="observatory-footer">
+          <span class="footer-icon">◎</span>
+          <span>Verified empirical evaluation artifacts located in <code>results/metrics.json</code> and <code>results/ablation_results.csv</code></span>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <span class="footer-brand">✦ HYBRID SENTIMENT INTELLIGENCE</span>
+        <span class="footer-sep">·</span>
+        <span>A quiet winter night of adaptive reasoning</span>
+      </div>
+    </footer>
+
+  </main>
+
+  <script src="app.js"></script>
 </body>
 </html>
