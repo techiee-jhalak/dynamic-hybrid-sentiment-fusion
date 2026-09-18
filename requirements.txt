@@ -1,13 +1,15 @@
 # Dynamic Hybrid Sentiment Fusion — Production Dependencies
 # Used by Render (and any pip-based deployment) for reproducible installs.
-# Generated from pyproject.toml [project].dependencies with pinned lower bounds.
-# Do NOT add development-only packages here (pytest, etc.).
+#
+# CPU-ONLY PyTorch: Render has no GPU. The --extra-index-url below allows pip
+# to find the CPU-only torch wheel (~200 MB instead of ~2.5 GB with CUDA/cuDNN).
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch>=2.0.0
 
 numpy>=1.24.0
 pandas>=2.0.0
 scikit-learn>=1.3.0
 nltk>=3.8.1
-torch>=2.0.0
 transformers>=4.35.0
 datasets>=2.14.0
 accelerate>=0.24.0

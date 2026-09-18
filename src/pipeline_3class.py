@@ -33,7 +33,7 @@ from src.models.fusion_3class import (
     Fusion3ClassResult,
     fuse_3class_vectors,
 )
-from src.evaluation.noise_sensitivity import assign_noise_group
+from src.features.noise_quantifier import assign_noise_group
 
 
 @dataclass(frozen=True)

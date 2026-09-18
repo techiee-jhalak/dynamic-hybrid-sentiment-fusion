@@ -19,6 +19,38 @@ import emoji
 from configs.config import NoiseWeights, config
 from src.data.preprocessor import TextPreprocessor
 
+# Exact noise group bands specified by research requirements
+NOISE_GROUP_LOW = "LOW"
+NOISE_GROUP_MODERATE = "MODERATE"
+NOISE_GROUP_HIGH = "HIGH"
+NOISE_GROUP_EXTREME = "EXTREME"
+
+ALL_NOISE_GROUPS = [
+    NOISE_GROUP_LOW,
+    NOISE_GROUP_MODERATE,
+    NOISE_GROUP_HIGH,
+    NOISE_GROUP_EXTREME,
+]
+
+
+def assign_noise_group(noise_score: float) -> str:
+    """Map continuous noise score N in [0, 1] to one of four research bands.
+
+    - LOW:       0.0 <= N <= 0.2
+    - MODERATE:  0.2 <  N <= 0.5
+    - HIGH:      0.5 <  N <= 0.8
+    - EXTREME:   0.8 <  N <= 1.0
+    """
+    n = float(min(1.0, max(0.0, noise_score)))
+    if n <= 0.20:
+        return NOISE_GROUP_LOW
+    elif n <= 0.50:
+        return NOISE_GROUP_MODERATE
+    elif n <= 0.80:
+        return NOISE_GROUP_HIGH
+    else:
+        return NOISE_GROUP_EXTREME
+
 
 # Unambiguous Romanized Hindi/Hinglish lexical markers
 HINGLISH_MARKERS: Set[str] = {

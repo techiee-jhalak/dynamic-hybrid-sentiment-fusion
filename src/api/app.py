@@ -64,14 +64,31 @@ def _get_cors_origins() -> List[str]:
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Load all ML models once at startup; release on shutdown."""
-    logger.info("Application startup: initialising ML models...")
+    import sys, time as _time
+
+    _t0 = _time.perf_counter()
+    logger.info("[STARTUP] Creating application — Python %s", sys.version.split()[0])
+
+    try:
+        import torch as _torch
+        logger.info("[STARTUP] torch %s loaded (CUDA available: %s)",
+                    _torch.__version__, _torch.cuda.is_available())
+    except Exception:
+        logger.info("[STARTUP] torch import deferred")
+
+    logger.info("[STARTUP] Initializing model manager")
+    _t1 = _time.perf_counter()
+
     try:
         ModelManager.initialize()
-        logger.info("ML models ready. API is accepting requests.")
     except RuntimeError as exc:
-        # Startup failure is fatal — log and re-raise so uvicorn exits cleanly.
-        logger.critical("Startup failed: %s", exc)
+        logger.critical("[STARTUP] FAILED after %.1fs — %s", _time.perf_counter() - _t0, exc)
         raise
+
+    _t2 = _time.perf_counter()
+    logger.info("[STARTUP] Model loaded in %.1fs (checkpoint: %s)",
+                _t2 - _t1, ModelManager.get_checkpoint_path() or "none")
+    logger.info("[STARTUP] Application ready — total startup %.1fs", _t2 - _t0)
 
     yield  # application runs
 

@@ -28,12 +28,8 @@ from src.api.schemas import (
     PredictResponse,
     RouterExplanationSchema,
 )
-from src.evaluation.noise_sensitivity import assign_noise_group
-from src.pipeline import PipelineResult, SentimentInferencePipeline
-from src.pipeline_3class import (
-    Sentimix3ClassInferencePipeline,
-    Sentimix3ClassPipelineResult,
-)
+from src.features.noise_quantifier import assign_noise_group
+from src.pipeline_3class import Sentimix3ClassPipelineResult
 
 logger = logging.getLogger(__name__)
 

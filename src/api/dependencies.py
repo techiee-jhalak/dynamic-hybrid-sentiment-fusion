@@ -9,21 +9,14 @@ from __future__ import annotations
 import logging
 import os
 from pathlib import Path
-from typing import Optional, Any, Union
+from typing import TYPE_CHECKING, Optional, Any, Union
 
-from src.models.dynamic_fusion import DynamicFusionFramework
-from src.models.vader_model import VaderSentimentModel
-from src.models.distilbert_model import DistilBertSentimentModel
-from src.models.adaptive_router import AdaptiveRouter
-from src.features.noise_quantifier import NoiseQuantifier
-from src.data.preprocessor import TextPreprocessor
-from src.pipeline import SentimentInferencePipeline
-from src.pipeline_3class import (
-    Sentimix3ClassInferencePipeline,
-    Sentimix3ClassPipelineResult,
-)
-from src.models.distilbert_3class import DistilBert3ClassModel
 from configs.config import config
+
+if TYPE_CHECKING:
+    from src.models.dynamic_fusion import DynamicFusionFramework
+    from src.pipeline import SentimentInferencePipeline
+    from src.pipeline_3class import Sentimix3ClassInferencePipeline
 
 logger = logging.getLogger(__name__)
 
@@ -66,6 +59,16 @@ class ModelManager:
         cls._device = resolved_device
         logger.info("Initializing models on device: %s", resolved_device)
 
+        # Import models and pipelines inside initialize to keep module import fast
+        from src.data.preprocessor import TextPreprocessor
+        from src.features.noise_quantifier import NoiseQuantifier
+        from src.models.vader_model import VaderSentimentModel
+        from src.models.distilbert_model import DistilBertSentimentModel
+        from src.models.adaptive_router import AdaptiveRouter
+        from src.pipeline import SentimentInferencePipeline
+        from src.pipeline_3class import Sentimix3ClassInferencePipeline
+        from src.models.distilbert_3class import DistilBert3ClassModel
+
         # 1. Initialize SentiMix 3-class production pipeline with real checkpoint
         checkpoint_dir = os.environ.get("SENTIMIX_MODEL_PATH") or str(
             Path(config.paths.saved_models_dir) / "sentimix_distilbert_best"
@@ -74,19 +77,20 @@ class ModelManager:
 
         try:
             if ckpt_path.exists():
-                logger.info("Loading SentiMix 3-class DistilBERT from real checkpoint: %s", checkpoint_dir)
+                logger.info("[STARTUP] Loading tokenizer from checkpoint: %s", checkpoint_dir)
                 distilbert_3class = DistilBert3ClassModel(
                     model_path_or_name=str(ckpt_path),
                     device=resolved_device,
                     lazy_load=False,
                 )
+                logger.info("[STARTUP] DistilBERT 3-class weights loaded")
                 cls._sentimix_pipeline = Sentimix3ClassInferencePipeline(
                     checkpoint_dir=ckpt_path,
                     distilbert_model=distilbert_3class,
                 )
                 cls._checkpoint_loaded = True
                 cls._checkpoint_path = str(ckpt_path)
-                logger.info("SentiMix 3-class model loaded and verified successfully.")
+                logger.info("[STARTUP] SentiMix 3-class pipeline ready")
             else:
                 logger.warning(
                     "Checkpoint path '%s' not found. Initializing lazy-load 3-class model.",
@@ -99,6 +103,7 @@ class ModelManager:
                 cls._checkpoint_path = str(ckpt_path)
 
             # 2. Initialize legacy binary pipeline (for backward compatibility)
+            logger.info("[STARTUP] Initializing legacy binary pipeline")
             preprocessor = TextPreprocessor()
             noise_quantifier = NoiseQuantifier()
             vader_model = VaderSentimentModel()
@@ -112,7 +117,7 @@ class ModelManager:
                 distilbert_model=distilbert_model,
                 router=router,
             )
-            logger.info("All model pipelines loaded successfully.")
+            logger.info("[STARTUP] All model pipelines loaded successfully.")
         except Exception as exc:
             logger.error(
                 "Model initialization failed [%s]: %s",
@@ -192,6 +197,7 @@ def get_sentimix_pipeline() -> Any:
 # Keep backward-compatible alias used by existing route skeletons
 def get_fusion_model() -> DynamicFusionFramework:
     """Backward-compatible dependency returning the fusion framework."""
+    from src.models.dynamic_fusion import DynamicFusionFramework
     pipeline = ModelManager.get_pipeline()
     return DynamicFusionFramework(
         vader_model=pipeline.vader_model,
