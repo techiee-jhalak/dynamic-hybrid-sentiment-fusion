@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import logging
 import os
+import sys
 from pathlib import Path
 from typing import TYPE_CHECKING, Optional, Any, Union
 
@@ -19,6 +20,28 @@ if TYPE_CHECKING:
     from src.pipeline_3class import Sentimix3ClassInferencePipeline
 
 logger = logging.getLogger(__name__)
+
+
+# ---------------------------------------------------------------------------
+# Checkpoint validation helper
+# ---------------------------------------------------------------------------
+
+_REQUIRED_TOKENIZER_FILES = {"tokenizer_config.json", "tokenizer.json"}
+_REQUIRED_MODEL_FILES = {"config.json"}
+
+
+def _checkpoint_is_complete(ckpt: Path) -> bool:
+    """Return True only when ``ckpt`` contains all files needed to load the
+    tokenizer and model weights locally without a Hub download."""
+    if not ckpt.is_dir():
+        return False
+    present = {p.name for p in ckpt.iterdir()}
+    has_tokenizer = bool(present & _REQUIRED_TOKENIZER_FILES)
+    has_model = bool(present & _REQUIRED_MODEL_FILES)
+    has_weights = any(
+        p.suffix in {".safetensors", ".bin", ".pt"} for p in ckpt.iterdir()
+    )
+    return has_tokenizer and has_model and has_weights
 
 
 class ModelManager:
@@ -59,6 +82,24 @@ class ModelManager:
         cls._device = resolved_device
         logger.info("Initializing models on device: %s", resolved_device)
 
+        # --- Runtime diagnostics (visible in Render logs) ---
+        logger.info("[DIAG] Python %s", sys.version)
+        try:
+            import sentencepiece as _sp
+            logger.info("[DIAG] sentencepiece %s", _sp.__version__)
+        except ImportError:
+            logger.warning("[DIAG] sentencepiece NOT installed")
+        try:
+            import torch as _torch
+            logger.info("[DIAG] torch %s | CUDA=%s", _torch.__version__, _torch.cuda.is_available())
+        except ImportError:
+            logger.warning("[DIAG] torch NOT installed")
+        try:
+            import transformers as _hf
+            logger.info("[DIAG] transformers %s", _hf.__version__)
+        except ImportError:
+            logger.warning("[DIAG] transformers NOT installed")
+
         # Import models and pipelines inside initialize to keep module import fast
         from src.data.preprocessor import TextPreprocessor
         from src.features.noise_quantifier import NoiseQuantifier
@@ -75,32 +116,42 @@ class ModelManager:
         )
         ckpt_path = Path(checkpoint_dir)
 
+        # Determine the effective model source.  The checkpoint directory may
+        # exist locally but be INCOMPLETE on Render (only training_metadata.json
+        # is committed to git; weights/tokenizer files are gitignored).
+        # In that case we fall back to the base Hub model so the tokenizer and
+        # model config are always downloadable.
+        if _checkpoint_is_complete(ckpt_path):
+            effective_model_path = str(ckpt_path)
+            logger.info(
+                "[STARTUP] Complete local checkpoint found: %s — loading from disk.",
+                effective_model_path,
+            )
+        else:
+            effective_model_path = config.training.model_name  # "distilbert-base-uncased"
+            logger.warning(
+                "[STARTUP] Checkpoint at '%s' is missing tokenizer/weight files "
+                "(expected on Render — model weights are gitignored). "
+                "Falling back to Hub model: %s",
+                checkpoint_dir,
+                effective_model_path,
+            )
+
         try:
-            if ckpt_path.exists():
-                logger.info("[STARTUP] Loading tokenizer from checkpoint: %s", checkpoint_dir)
-                distilbert_3class = DistilBert3ClassModel(
-                    model_path_or_name=str(ckpt_path),
-                    device=resolved_device,
-                    lazy_load=False,
-                )
-                logger.info("[STARTUP] DistilBERT 3-class weights loaded")
-                cls._sentimix_pipeline = Sentimix3ClassInferencePipeline(
-                    checkpoint_dir=ckpt_path,
-                    distilbert_model=distilbert_3class,
-                )
-                cls._checkpoint_loaded = True
-                cls._checkpoint_path = str(ckpt_path)
-                logger.info("[STARTUP] SentiMix 3-class pipeline ready")
-            else:
-                logger.warning(
-                    "Checkpoint path '%s' not found. Initializing lazy-load 3-class model.",
-                    checkpoint_dir,
-                )
-                cls._sentimix_pipeline = Sentimix3ClassInferencePipeline(
-                    checkpoint_dir=ckpt_path,
-                )
-                cls._checkpoint_loaded = False
-                cls._checkpoint_path = str(ckpt_path)
+            logger.info("[STARTUP] Loading DistilBERT 3-class from: %s", effective_model_path)
+            distilbert_3class = DistilBert3ClassModel(
+                model_path_or_name=effective_model_path,
+                device=resolved_device,
+                lazy_load=False,
+            )
+            logger.info("[STARTUP] DistilBERT 3-class weights loaded")
+            cls._sentimix_pipeline = Sentimix3ClassInferencePipeline(
+                checkpoint_dir=ckpt_path,
+                distilbert_model=distilbert_3class,
+            )
+            cls._checkpoint_loaded = _checkpoint_is_complete(ckpt_path)
+            cls._checkpoint_path = effective_model_path
+            logger.info("[STARTUP] SentiMix 3-class pipeline ready (checkpoint_loaded=%s)", cls._checkpoint_loaded)
 
             # 2. Initialize legacy binary pipeline (for backward compatibility)
             logger.info("[STARTUP] Initializing legacy binary pipeline")

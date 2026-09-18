@@ -4,7 +4,18 @@ services:
     runtime: python
     # Render auto-detects pyproject.toml and may invoke Poetry.
     # Explicit buildCommand forces pip so Poetry is never used.
-    buildCommand: "pip install --upgrade pip && pip install torch==2.14.0+cpu --index-url https://download.pytorch.org/whl/cpu && pip install -r requirements.txt"
+    # The python -c step pre-downloads distilbert-base-uncased to the HF cache
+    # during BUILD so the server starts without a network round-trip.
+    buildCommand: >-
+      pip install --upgrade pip &&
+      pip install torch==2.14.0+cpu --index-url https://download.pytorch.org/whl/cpu &&
+      pip install -r requirements.txt &&
+      python -c "
+      from transformers import AutoTokenizer, AutoModelForSequenceClassification;
+      AutoTokenizer.from_pretrained('distilbert-base-uncased');
+      AutoModelForSequenceClassification.from_pretrained('distilbert-base-uncased', num_labels=3);
+      print('Model pre-download complete.')
+      "
     startCommand: "uvicorn src.api.app:app --host 0.0.0.0 --port $PORT"
     envVars:
       - key: PYTHON_VERSION
@@ -13,3 +24,7 @@ services:
         value: "*"
       - key: WEB_CONCURRENCY
         value: "1"
+      - key: HF_HUB_DISABLE_SYMLINKS_WARNING
+        value: "1"
+      - key: TRANSFORMERS_OFFLINE
+        value: "0"
