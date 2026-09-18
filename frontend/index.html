@@ -27,25 +27,23 @@
                 </div>
                 <textarea 
                     id="text-input" 
-                    placeholder="Enter Hinglish, code-mixed, or standard text here (e.g., 'yeh movie bahut acchi hai 😍')..."
+                    placeholder="Yeh movie bohot achhi hai yaar! 😊🔥"
                     maxlength="2048"
-                    rows="5"
+                    rows="4"
                     aria-label="Input text for sentiment analysis"
                 ></textarea>
                 
                 <div class="action-buttons">
-                    <button id="analyze-btn" class="btn btn-primary" type="button">Analyze Sentiment</button>
+                    <button id="analyze-btn" class="btn btn-primary" type="button">ANALYZE SENTIMENT</button>
                     <button id="clear-btn" class="btn btn-secondary" type="button">Clear</button>
                 </div>
                 
                 <!-- Loading and Error States -->
                 <div id="loading-state" class="state-message loading hidden" aria-live="polite">
                     <div class="spinner"></div>
-                    <span>Analyzing sentiment...</span>
+                    <span>Analyzing sentiment with real SentiMix model...</span>
                 </div>
-                <div id="error-state" class="state-message error hidden" aria-live="assertive">
-                    <!-- Error message goes here -->
-                </div>
+                <div id="error-state" class="state-message error hidden" aria-live="assertive"></div>
             </section>
 
             <!-- Results Dashboard (Hidden by default) -->
@@ -53,12 +51,89 @@
                 
                 <!-- Core Result -->
                 <div class="card core-result">
-                    <h2>Overall Sentiment</h2>
+                    <h2>Sentiment Analysis Result</h2>
                     <div class="result-highlight">
-                        <span id="sentiment-badge" class="badge">--</span>
+                        <div class="sentiment-container">
+                            <span class="result-label-mini">PREDICTED SENTIMENT</span>
+                            <span id="sentiment-badge" class="badge">--</span>
+                        </div>
                         <div class="result-score">
-                            <span class="score-value" id="final-score">0.000</span>
-                            <span class="score-label">Final Fusion Score</span>
+                            <span class="score-value" id="confidence-value">--%</span>
+                            <span class="score-label">Confidence</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Model Contributions (3-Class Probability Distributions) -->
+                <div class="card model-contributions">
+                    <h3>Model Contributions & Vector Distributions</h3>
+                    <p class="section-subtext">Comparing class probabilities across lexicon prior, transformer contextual model, and fused distribution.</p>
+                    
+                    <div class="vector-distributions">
+                        <!-- Final Fusion Row -->
+                        <div class="vector-row highlight-row">
+                            <div class="vector-header">
+                                <span class="vector-title">Final Fused Prediction</span>
+                                <span class="vector-meta">Dynamic Weighted Combination</span>
+                            </div>
+                            <div class="prob-bars-container">
+                                <div class="prob-group">
+                                    <div class="prob-label"><span>Positive</span><span id="fused-pos">0.0%</span></div>
+                                    <div class="prob-track"><div id="bar-fused-pos" class="prob-bar pos-bar" style="width: 0%"></div></div>
+                                </div>
+                                <div class="prob-group">
+                                    <div class="prob-label"><span>Negative</span><span id="fused-neg">0.0%</span></div>
+                                    <div class="prob-track"><div id="bar-fused-neg" class="prob-bar neg-bar" style="width: 0%"></div></div>
+                                </div>
+                                <div class="prob-group">
+                                    <div class="prob-label"><span>Neutral</span><span id="fused-neu">0.0%</span></div>
+                                    <div class="prob-track"><div id="bar-fused-neu" class="prob-bar neu-bar" style="width: 0%"></div></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- DistilBERT Row -->
+                        <div class="vector-row">
+                            <div class="vector-header">
+                                <span class="vector-title">DistilBERT (Fine-Tuned)</span>
+                                <span class="vector-meta" id="distilbert-weight-label">Weight: 1−α = 0.980</span>
+                            </div>
+                            <div class="prob-bars-container">
+                                <div class="prob-group">
+                                    <div class="prob-label"><span>Positive</span><span id="distil-pos">0.0%</span></div>
+                                    <div class="prob-track"><div id="bar-distil-pos" class="prob-bar pos-bar" style="width: 0%"></div></div>
+                                </div>
+                                <div class="prob-group">
+                                    <div class="prob-label"><span>Negative</span><span id="distil-neg">0.0%</span></div>
+                                    <div class="prob-track"><div id="bar-distil-neg" class="prob-bar neg-bar" style="width: 0%"></div></div>
+                                </div>
+                                <div class="prob-group">
+                                    <div class="prob-label"><span>Neutral</span><span id="distil-neu">0.0%</span></div>
+                                    <div class="prob-track"><div id="bar-distil-neu" class="prob-bar neu-bar" style="width: 0%"></div></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- VADER Row -->
+                        <div class="vector-row">
+                            <div class="vector-header">
+                                <span class="vector-title">VADER (3-Class Adapter)</span>
+                                <span class="vector-meta" id="vader-weight-label">Weight: α = 0.020</span>
+                            </div>
+                            <div class="prob-bars-container">
+                                <div class="prob-group">
+                                    <div class="prob-label"><span>Positive</span><span id="vader-pos">0.0%</span></div>
+                                    <div class="prob-track"><div id="bar-vader-pos" class="prob-bar pos-bar" style="width: 0%"></div></div>
+                                </div>
+                                <div class="prob-group">
+                                    <div class="prob-label"><span>Negative</span><span id="vader-neg">0.0%</span></div>
+                                    <div class="prob-track"><div id="bar-vader-neg" class="prob-bar neg-bar" style="width: 0%"></div></div>
+                                </div>
+                                <div class="prob-group">
+                                    <div class="prob-label"><span>Neutral</span><span id="vader-neu">0.0%</span></div>
+                                    <div class="prob-track"><div id="bar-vader-neu" class="prob-bar neu-bar" style="width: 0%"></div></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -68,22 +143,22 @@
                     
                     <!-- Dynamic Fusion Details -->
                     <div class="card fusion-details">
-                        <h3>Dynamic Fusion</h3>
+                        <h3>Dynamic Routing</h3>
                         <div class="metrics-list">
                             <div class="metric-row">
-                                <span class="metric-name">VADER Score</span>
-                                <span class="metric-value" id="vader-score">0.000</span>
+                                <span class="metric-name">Routing Weight (α)</span>
+                                <span class="metric-value highlight-text" id="alpha-value">0.020</span>
                             </div>
                             <div class="metric-row">
-                                <span class="metric-name">DistilBERT Score</span>
-                                <span class="metric-value" id="distilbert-score">0.000</span>
+                                <span class="metric-name">VADER Contribution</span>
+                                <span class="metric-value" id="vader-contrib">2.0%</span>
                             </div>
                             <div class="metric-row">
-                                <span class="metric-name">Dynamic Weight (α)</span>
-                                <span class="metric-value highlight-text" id="alpha-value">0.000</span>
+                                <span class="metric-name">DistilBERT Contribution</span>
+                                <span class="metric-value" id="distil-contrib">98.0%</span>
                             </div>
                             <div class="metric-row formula-row">
-                                <em>S_final = α·VADER + (1-α)·DistilBERT</em>
+                                <em>α controls the contribution of the VADER lexical model; 1−α controls the contribution of DistilBERT.</em>
                             </div>
                         </div>
                     </div>
@@ -112,11 +187,11 @@
                                 <span class="metric-value" id="emoji-density">0.000</span>
                             </div>
                             <div class="metric-row">
-                                <span class="metric-name" title="Elongated-character token ratio">Repetition Ratio (R)</span>
+                                <span class="metric-name" title="Elongated-character token ratio">Repetition Score (R)</span>
                                 <span class="metric-value" id="repetition-ratio">0.000</span>
                             </div>
                             <div class="metric-row">
-                                <span class="metric-name" title="Hinglish/code-mixing token ratio">Code-Mixing (C)</span>
+                                <span class="metric-name" title="Hinglish code-mixing token ratio">Code-Mixing Ratio (C)</span>
                                 <span class="metric-value" id="codemix-intensity">0.000</span>
                             </div>
                             <div class="metric-row">
@@ -139,9 +214,11 @@
                     <summary>Technical Details & Architecture</summary>
                     <div class="details-content">
                         <ul>
-                            <li><strong>Models:</strong> VADER Lexicon + DistilBERT Transformer (Fine-tuned)</li>
-                            <li><strong>Noise Score (N):</strong> <code>0.25·E + 0.25·R + 0.30·C + 0.20·S</code></li>
-                            <li><strong>Router Logic:</strong> If N ≤ 0.20, α = 0.02. Else α = clamp(σ(z), 0.02, 0.25) where z = 0.05·(20 - L) + 12.0·N</li>
+                            <li><strong>Dataset & Architecture:</strong> SemEval-2020 Task 9 (SentiMix Hinglish) 3-Class Dynamic Hybrid Fusion</li>
+                            <li><strong>Components:</strong> VADER Lexicon 3-Class Adapter + DistilBERT Sequence Classifier (Fine-Tuned)</li>
+                            <li><strong>Noise Quantification Module (NQM):</strong> <code>N = 0.25·E + 0.25·R + 0.30·C + 0.20·S</code></li>
+                            <li><strong>Adaptive Router:</strong> If <code>N ≤ 0.20</code>, <code>α = 0.02</code>. Else <code>α = clamp(σ(z), 0.02, 0.25)</code> where <code>z = 0.05·(20 - L) + 12.0·N</code></li>
+                            <li><strong>3-Class Vector Fusion:</strong> <code>P_final = α·P_VADER + (1-α)·P_DistilBERT</code>; <code>prediction = argmax(P_final)</code></li>
                             <li><strong>Tokens (L):</strong> <span id="token-length">--</span></li>
                         </ul>
                     </div>

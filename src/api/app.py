@@ -137,8 +137,31 @@ async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONR
     )
 
 
+from pathlib import Path
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse, JSONResponse
+
 # ---------------------------------------------------------------------------
-# Router registration
+# Router registration (both with /api prefix and root for full flexibility)
 # ---------------------------------------------------------------------------
 
 app.include_router(router, prefix="/api")
+app.include_router(router)
+
+# ---------------------------------------------------------------------------
+# Frontend static asset serving
+# ---------------------------------------------------------------------------
+
+frontend_dir = Path(__file__).resolve().parent.parent.parent / "frontend"
+if frontend_dir.exists():
+    @app.get("/", include_in_schema=False)
+    async def serve_frontend():
+        return FileResponse(frontend_dir / "index.html")
+
+    @app.get("/styles.css", include_in_schema=False)
+    async def serve_css():
+        return FileResponse(frontend_dir / "styles.css")
+
+    @app.get("/app.js", include_in_schema=False)
+    async def serve_js():
+        return FileResponse(frontend_dir / "app.js")
