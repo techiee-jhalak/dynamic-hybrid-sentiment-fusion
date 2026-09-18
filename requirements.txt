@@ -4,7 +4,7 @@
 # CPU-ONLY PyTorch: Render has no GPU. The --extra-index-url below allows pip
 # to find the CPU-only torch wheel (~200 MB instead of ~2.5 GB with CUDA/cuDNN).
 --extra-index-url https://download.pytorch.org/whl/cpu
-torch>=2.0.0
+torch==2.14.0+cpu
 
 numpy>=1.24.0
 pandas>=2.0.0

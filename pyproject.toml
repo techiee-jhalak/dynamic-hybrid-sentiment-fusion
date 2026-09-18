@@ -39,6 +39,15 @@ dev = [
 # does not need to be distributed as a package named dynamic-hybrid-sentiment-fusion.
 package-mode = false
 
+[[tool.poetry.source]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+priority = "explicit"
+
+[tool.poetry.dependencies]
+python = ">=3.11"
+torch = { version = "2.14.0+cpu", source = "pytorch-cpu" }
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
