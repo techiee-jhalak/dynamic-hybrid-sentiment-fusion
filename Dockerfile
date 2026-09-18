@@ -58,4 +58,4 @@ COPY saved_models/ saved_models/
 ENV PORT=8000
 EXPOSE ${PORT}
 
-CMD ["sh", "-c", "uvicorn src.api.app:app --host 0.0.0.0 --port ${PORT:-8000} --workers 1"]
+CMD uvicorn src.api.app:app --host 0.0.0.0 --port ${PORT:-8000} --workers 1
