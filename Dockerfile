@@ -44,6 +44,16 @@ RUN pip install --no-cache-dir -r requirements.txt
 # ── Application source ────────────────────────────────────────────────────────
 COPY src/       src/
 COPY configs/   configs/
+
+# ── Frontend assets ──────────────────────────────────────────────────────────
+# ARG CACHEBUST forces Docker to never cache this and subsequent layers,
+# ensuring the Dreamy Winter AI frontend is always copied fresh from the
+# build context (not served from a stale Docker layer cache on Railway).
+# Pass at build time:  --build-arg CACHEBUST=$(date +%s)
+# Railway can be configured to pass this via its environment variables.
+ARG CACHEBUST=1
+ARG BUILD_SHA=unknown
+LABEL build.sha="${BUILD_SHA}" build.cachebust="${CACHEBUST}"
 COPY frontend/  frontend/
 
 # ── Trained model checkpoint (baked into image — no runtime Hub download) ────
