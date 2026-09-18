@@ -1,0 +1,262 @@
+{
+  "dynamic_fusion": {
+    "total_samples": 3000,
+    "accuracy": 0.6883,
+    "macro_precision": 0.7124,
+    "macro_recall": 0.6879,
+    "macro_f1": 0.6946,
+    "per_class": {
+      "positive": {
+        "label_id": 0,
+        "precision": 0.8382,
+        "recall": 0.663,
+        "f1": 0.7404,
+        "support": 1000
+      },
+      "negative": {
+        "label_id": 1,
+        "precision": 0.7189,
+        "recall": 0.6933,
+        "f1": 0.7059,
+        "support": 900
+      },
+      "neutral": {
+        "label_id": 2,
+        "precision": 0.5802,
+        "recall": 0.7073,
+        "f1": 0.6374,
+        "support": 1100
+      }
+    },
+    "confusion_matrix": {
+      "matrix": [
+        [
+          663,
+          35,
+          302
+        ],
+        [
+          15,
+          624,
+          261
+        ],
+        [
+          113,
+          209,
+          778
+        ]
+      ],
+      "labels": [
+        "positive",
+        "negative",
+        "neutral"
+      ]
+    }
+  },
+  "distilbert": {
+    "total_samples": 3000,
+    "accuracy": 0.6863,
+    "macro_precision": 0.698,
+    "macro_recall": 0.6906,
+    "macro_f1": 0.6917,
+    "per_class": {
+      "positive": {
+        "label_id": 0,
+        "precision": 0.8199,
+        "recall": 0.692,
+        "f1": 0.7505,
+        "support": 1000
+      },
+      "negative": {
+        "label_id": 1,
+        "precision": 0.6783,
+        "recall": 0.7544,
+        "f1": 0.7144,
+        "support": 900
+      },
+      "neutral": {
+        "label_id": 2,
+        "precision": 0.5957,
+        "recall": 0.6255,
+        "f1": 0.6102,
+        "support": 1100
+      }
+    },
+    "confusion_matrix": {
+      "matrix": [
+        [
+          692,
+          44,
+          264
+        ],
+        [
+          18,
+          679,
+          203
+        ],
+        [
+          134,
+          278,
+          688
+        ]
+      ],
+      "labels": [
+        "positive",
+        "negative",
+        "neutral"
+      ]
+    }
+  },
+  "static_fusion": {
+    "total_samples": 3000,
+    "accuracy": 0.686,
+    "macro_precision": 0.6997,
+    "macro_recall": 0.6894,
+    "macro_f1": 0.6918,
+    "per_class": {
+      "positive": {
+        "label_id": 0,
+        "precision": 0.8237,
+        "recall": 0.687,
+        "f1": 0.7492,
+        "support": 1000
+      },
+      "negative": {
+        "label_id": 1,
+        "precision": 0.6851,
+        "recall": 0.7422,
+        "f1": 0.7125,
+        "support": 900
+      },
+      "neutral": {
+        "label_id": 2,
+        "precision": 0.5903,
+        "recall": 0.6391,
+        "f1": 0.6137,
+        "support": 1100
+      }
+    },
+    "confusion_matrix": {
+      "matrix": [
+        [
+          687,
+          40,
+          273
+        ],
+        [
+          17,
+          668,
+          215
+        ],
+        [
+          130,
+          267,
+          703
+        ]
+      ],
+      "labels": [
+        "positive",
+        "negative",
+        "neutral"
+      ]
+    }
+  },
+  "vader": {
+    "total_samples": 3000,
+    "accuracy": 0.3753,
+    "macro_precision": 0.5768,
+    "macro_recall": 0.3423,
+    "macro_f1": 0.2009,
+    "per_class": {
+      "positive": {
+        "label_id": 0,
+        "precision": 0.8611,
+        "recall": 0.031,
+        "f1": 0.0598,
+        "support": 1000
+      },
+      "negative": {
+        "label_id": 1,
+        "precision": 0.5,
+        "recall": 0.0022,
+        "f1": 0.0044,
+        "support": 900
+      },
+      "neutral": {
+        "label_id": 2,
+        "precision": 0.3693,
+        "recall": 0.9936,
+        "f1": 0.5384,
+        "support": 1100
+      }
+    },
+    "confusion_matrix": {
+      "matrix": [
+        [
+          31,
+          0,
+          969
+        ],
+        [
+          0,
+          2,
+          898
+        ],
+        [
+          5,
+          2,
+          1093
+        ]
+      ],
+      "labels": [
+        "positive",
+        "negative",
+        "neutral"
+      ]
+    }
+  },
+  "mcnemar_tests": {
+    "dyn_vs_bert": {
+      "comparison": "Dynamic Fusion vs DistilBERT Only",
+      "model_a": "Dynamic Fusion",
+      "model_b": "DistilBERT Only",
+      "samples": 3000,
+      "both_correct": 1975,
+      "model_a_only": 90,
+      "model_b_only": 84,
+      "both_incorrect": 851,
+      "statistic": 0.1437,
+      "p_value": 0.704651,
+      "is_significant": false,
+      "superior_model": "Dynamic Fusion"
+    },
+    "dyn_vs_static": {
+      "comparison": "Dynamic Fusion vs Static Fusion",
+      "model_a": "Dynamic Fusion",
+      "model_b": "Static Fusion",
+      "samples": 3000,
+      "both_correct": 1990,
+      "model_a_only": 75,
+      "model_b_only": 68,
+      "both_incorrect": 867,
+      "statistic": 0.2517,
+      "p_value": 0.615847,
+      "is_significant": false,
+      "superior_model": "Dynamic Fusion"
+    },
+    "dyn_vs_vader": {
+      "comparison": "Dynamic Fusion vs VADER Only",
+      "model_a": "Dynamic Fusion",
+      "model_b": "VADER Only",
+      "samples": 3000,
+      "both_correct": 808,
+      "model_a_only": 1257,
+      "model_b_only": 318,
+      "both_incorrect": 617,
+      "statistic": 558.6311,
+      "p_value": 0.0,
+      "is_significant": true,
+      "superior_model": "Dynamic Fusion"
+    }
+  }
+}

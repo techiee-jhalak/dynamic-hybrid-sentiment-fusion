@@ -1,0 +1,4 @@
+Noise_Group,Sample_Count,Percentage,Dynamic_Accuracy,Dynamic_Macro_F1,DistilBERT_Accuracy,DistilBERT_Macro_F1,VADER_Accuracy,VADER_Macro_F1,Delta_F1_over_DistilBERT
+LOW,1634,54.47,0.6836,0.6894,0.686,0.6914,0.3739,0.1976,-0.002
+MODERATE,1365,45.5,0.6938,0.6929,0.6864,0.6875,0.3773,0.205,0.0054
+HIGH,1,0.03,1.0,1.0,1.0,1.0,0.0,0.0,0.0

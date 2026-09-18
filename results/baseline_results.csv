@@ -1,0 +1,5 @@
+Model,Accuracy,Macro Precision,Macro Recall,Macro F1,Pos F1,Neg F1,Neu F1
+VADER (3-class Lexicon Adapter),0.3753,0.5768,0.3423,0.2009,0.0598,0.0044,0.5384
+DistilBERT (3-class Fine-Tuned),0.6863,0.698,0.6906,0.6917,0.7505,0.7144,0.6102
+Static Fusion (Fixed alpha=0.02),0.686,0.6997,0.6894,0.6918,0.7492,0.7125,0.6137
+Dynamic Hybrid Fusion (Proposed),0.6883,0.7124,0.6879,0.6946,0.7404,0.7059,0.6374

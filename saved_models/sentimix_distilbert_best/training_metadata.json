@@ -1,0 +1,39 @@
+{
+  "dataset_identity": "SemEval-2020 Task 9 / SentiMix \u2014 Hinglish",
+  "train_count": 14000,
+  "dev_count": 3000,
+  "test_count": 3000,
+  "model_architecture": "DistilBertForSequenceClassification",
+  "model_name": "distilbert-base-uncased",
+  "num_labels": 3,
+  "class_order": {
+    "positive": 0,
+    "negative": 1,
+    "neutral": 2
+  },
+  "epochs": 3,
+  "batch_size": 16,
+  "learning_rate": 2e-05,
+  "max_length": 128,
+  "python_version": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+  "torch_version": "2.14.0+cpu",
+  "transformers_version": "5.17.0",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "random_seed": 42,
+  "training_start_utc": "2026-09-15T20:13:28.015227+00:00",
+  "training_end_utc": "2026-09-18T14:51:46.397236+00:00",
+  "duration_seconds": 239898.38,
+  "best_checkpoint_path": "C:\\Users\\ASUS\\OneDrive\\Desktop\\dynamic-hybrid-sentiment-fusion\\saved_models\\sentimix_distilbert_best",
+  "checkpoint_dir": "C:\\Users\\ASUS\\OneDrive\\Desktop\\dynamic-hybrid-sentiment-fusion\\saved_models\\checkpoints\\sentimix_distilbert_3class",
+  "dev_metrics": {
+    "eval_loss": 0.8351,
+    "eval_accuracy": 0.6183,
+    "eval_f1": 0.6208,
+    "eval_macro_precision": 0.6197,
+    "eval_macro_recall": 0.6283,
+    "eval_runtime": 55.4356,
+    "eval_samples_per_second": 54.117,
+    "eval_steps_per_second": 1.696,
+    "epoch": 3.0
+  }
+}

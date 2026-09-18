@@ -1,0 +1,304 @@
+{
+  "total_errors": 935,
+  "error_rate": 0.3117,
+  "representative_error_samples": {
+    "cross_script_code_mixing": [
+      {
+        "uid": "30898",
+        "text": "@ ravindraj12 @ TarekFatah Yarr India me aise log b hain ??? Life me 1st time India ka koi banda Positive dekha Appreciate u bro \u00f0\u0178\u2021\u00b5\u00f0\u0178\u2021\u00b0\u00e2\u009d\u00a4\u00f0\u0178\u2021\u00ae\u00f0\u0178\u2021\u00b3",
+        "gold": "positive",
+        "predicted": "neutral",
+        "noise_score": 0.3435,
+        "noise_group": "MODERATE",
+        "code_mixing_ratio": 0.875,
+        "emoji_density": 0.0238,
+        "repetition_score": 0.0714,
+        "confidence": 0.5451
+      },
+      {
+        "uid": "16061",
+        "text": "@ asifnkhan08 @ SAUMEN _ BANERJ _ E @ JhaSanjay Time and circumstances ke sath jo change nhi hota vo sabse bada bewakuf ho \u00e2\u20ac\u00a6 https // t co / GPIt7Q9zJx",
+        "gold": "negative",
+        "predicted": "neutral",
+        "noise_score": 0.1606,
+        "noise_group": "LOW",
+        "code_mixing_ratio": 0.35,
+        "emoji_density": 0.0,
+        "repetition_score": 0.0,
+        "confidence": 0.6432
+      },
+      {
+        "uid": "18612",
+        "text": "Tum jaise bike hue godi media ke show me nahi Jana rashtra hit me bahut achha faisla hai . Aise media ko parmanent i \u00e2\u20ac\u00a6 https // t . co / Fyqer2WHG8",
+        "gold": "negative",
+        "predicted": "neutral",
+        "noise_score": 0.2389,
+        "noise_group": "MODERATE",
+        "code_mixing_ratio": 0.6667,
+        "emoji_density": 0.0,
+        "repetition_score": 0.0,
+        "confidence": 0.6858
+      },
+      {
+        "uid": "17667",
+        "text": "Sir @ ArvindKejriwal Aap bhi aisa drama kr do kam se km https // t . co / hbCFHG6tek",
+        "gold": "negative",
+        "predicted": "neutral",
+        "noise_score": 0.1726,
+        "noise_group": "LOW",
+        "code_mixing_ratio": 0.4167,
+        "emoji_density": 0.0,
+        "repetition_score": 0.0,
+        "confidence": 0.6471
+      },
+      {
+        "uid": "42867",
+        "text": "@ QasimalirazaAli Ye such bolne walo ko mar sakte lekin such ko daba nhi sakhte or such ko jitna dabane ki koshish k \u00e2\u20ac\u00a6 https // t co / RNCi0uDlOd",
+        "gold": "neutral",
+        "predicted": "negative",
+        "noise_score": 0.1932,
+        "noise_group": "LOW",
+        "code_mixing_ratio": 0.5263,
+        "emoji_density": 0.0,
+        "repetition_score": 0.0,
+        "confidence": 0.5296
+      }
+    ],
+    "emojis_polysemy": [
+      {
+        "uid": "12141",
+        "text": "@ smritiirani \u00f0\u0178\u2021\u00ae\u00f0\u0178\u2021\u00b3\u00f0\u0178\u2021\u00ae\u00f0\u0178\u2021\u00b3\u00f0\u0178\u2021\u00ae\u00f0\u0178\u2021\u00b3\u00f0\u0178\u2021\u00ae\u00f0\u0178\u2021\u00b3\u00f0\u0178\u2021\u00ae\u00f0\u0178\u2021\u00b3 jai ho irani ji aap ne Rahul Gandhi ko harakar bahut acha keya Jai BJP \u00f0\u0178\u2021\u00ae\u00f0\u0178\u2021\u00b3\u00f0\u0178\u2021\u00ae\u00f0\u0178\u2021\u00b3\u00f0\u0178\u2021\u00ae\u00f0\u0178\u2021\u00b3\u00f0\u0178\u2021\u00ae\u00f0\u0178\u2021\u00b3\u00f0\u0178\u2021\u00ae\u00f0\u0178\u2021\u00b3 https // t . co / 35Viuj83sv",
+        "gold": "positive",
+        "predicted": "neutral",
+        "noise_score": 0.136,
+        "noise_group": "LOW",
+        "code_mixing_ratio": 0.1591,
+        "emoji_density": 0.1176,
+        "repetition_score": 0.0,
+        "confidence": 0.5503
+      },
+      {
+        "uid": "24504",
+        "text": "RT @ Sulex _ kindin Jumma \u00e2\u20ac\u2122 at Mubarak to y \u00e2\u20ac\u2122 all \u00f0\u0178\u2122\u0152\u00f0\u0178\u008f\u00bb\u00f0\u0178\u2122\u008f\u00f0\u0178\u008f\u00bb https // t . co / FtYJ8HydOL",
+        "gold": "positive",
+        "predicted": "neutral",
+        "noise_score": 0.2173,
+        "noise_group": "MODERATE",
+        "code_mixing_ratio": 0.4,
+        "emoji_density": 0.1081,
+        "repetition_score": 0.0,
+        "confidence": 0.7288
+      },
+      {
+        "uid": "4725",
+        "text": "@ tekeea __ Lmfaooo it \u00e2\u20ac\u2122 s not that bad like you \u00e2\u20ac\u2122 re thinking",
+        "gold": "positive",
+        "predicted": "neutral",
+        "noise_score": 0.2279,
+        "noise_group": "MODERATE",
+        "code_mixing_ratio": 0.4,
+        "emoji_density": 0.1053,
+        "repetition_score": 0.1579,
+        "confidence": 0.7072
+      },
+      {
+        "uid": "23296",
+        "text": "y \u00e2\u20ac\u2122 all haven \u00e2\u20ac\u2122 t seen me in so long and that \u00e2\u20ac\u2122 s the only reason you all think maybe i \u00e2\u20ac\u2122 m pretty",
+        "gold": "positive",
+        "predicted": "neutral",
+        "noise_score": 0.1051,
+        "noise_group": "LOW",
+        "code_mixing_ratio": 0.1739,
+        "emoji_density": 0.1176,
+        "repetition_score": 0.0,
+        "confidence": 0.7675
+      }
+    ],
+    "repetition_emphasis": [
+      {
+        "uid": "9078",
+        "text": "@ ZeeNews Mein toh chahta hoon ye resign na kare ... Ye jab tak rahega @ BJP4India aaram se elections jeetegi ... Aur ent \u00e2\u20ac\u00a6 https // t . co / Djgtp4hTtb",
+        "gold": "neutral",
+        "predicted": "negative",
+        "noise_score": 0.1598,
+        "noise_group": "LOW",
+        "code_mixing_ratio": 0.2174,
+        "emoji_density": 0.0,
+        "repetition_score": 0.1622,
+        "confidence": 0.7329
+      },
+      {
+        "uid": "13712",
+        "text": "Unse toh achchi hai yeh cigarette ... dil ko jalati hai magar hoton pe toh aati hai .....\u00f0\u0178\u2019\u201d\u00f0\u0178\u2019\u201d\u00f0\u0178\u2019\u201d SMOKING AND LOVE BOTH C \u00e2\u20ac\u00a6 https // t . co / rx1AYhkDCA",
+        "gold": "neutral",
+        "predicted": "positive",
+        "noise_score": 0.2207,
+        "noise_group": "MODERATE",
+        "code_mixing_ratio": 0.3636,
+        "emoji_density": 0.0,
+        "repetition_score": 0.186,
+        "confidence": 0.6714
+      },
+      {
+        "uid": "40419",
+        "text": "@ lkopolice @ Akhileshthakurs Ye hai fasism ka phla stape ... 2022 target ... Hehe .. Ensan bnaya hai eshwar ne ...... Ldo aur mro",
+        "gold": "negative",
+        "predicted": "neutral",
+        "noise_score": 0.243,
+        "noise_group": "MODERATE",
+        "code_mixing_ratio": 0.25,
+        "emoji_density": 0.0,
+        "repetition_score": 0.48,
+        "confidence": 0.6351
+      },
+      {
+        "uid": "11377",
+        "text": "Aise seedhe muunh pe bol diya @ Arun2981 bada potato ..... Sad ( We boycott you @ divya _ amanna https // t . co / qyLEXvCZ0l",
+        "gold": "neutral",
+        "predicted": "negative",
+        "noise_score": 0.2142,
+        "noise_group": "MODERATE",
+        "code_mixing_ratio": 0.375,
+        "emoji_density": 0.0,
+        "repetition_score": 0.1667,
+        "confidence": 0.5742
+      },
+      {
+        "uid": "6822",
+        "text": "@_ Hsn _ Shah Nahi Noor !!! Aag to Pakistan team ne laga thi wo bhi first match me against wi . Kya khele hai !!! Wah !!!",
+        "gold": "positive",
+        "predicted": "neutral",
+        "noise_score": 0.3675,
+        "noise_group": "MODERATE",
+        "code_mixing_ratio": 0.7692,
+        "emoji_density": 0.0,
+        "repetition_score": 0.2647,
+        "confidence": 0.6615
+      }
+    ],
+    "neutral_polarity_boundary": [
+      {
+        "uid": "10426",
+        "text": "RT @ DHEERAJ48968067 @ nirahua1 @ msunilbishnoi Wah bhai Shandaar jabab",
+        "gold": "positive",
+        "predicted": "neutral",
+        "noise_score": 0.0701,
+        "noise_group": "LOW",
+        "code_mixing_ratio": 0.0909,
+        "emoji_density": 0.0,
+        "repetition_score": 0.0,
+        "confidence": 0.4826
+      },
+      {
+        "uid": "22656",
+        "text": "@ BaijnathMourya @ mssirsa @ AapkamanojS @ ArvindKejriwal Haan Mai free Wi-Fi dunga free water dunga Sasti Bijli doo \u00e2\u20ac\u00a6 https // t co / d4uOIcb562",
+        "gold": "positive",
+        "predicted": "neutral",
+        "noise_score": 0.1327,
+        "noise_group": "LOW",
+        "code_mixing_ratio": 0.2353,
+        "emoji_density": 0.0,
+        "repetition_score": 0.0,
+        "confidence": 0.5664
+      },
+      {
+        "uid": "2926",
+        "text": "@ AhmedRazaQadri Wah MASHA ALLAH \u00f0\u0178\u00a5\u00b0\u00f0\u0178\u00a5\u00b0\u00e2\u009d\u00a4\u00e2\u009d\u00a4\u00f0\u0178\u0152\u00b9\u00f0\u0178\u0152\u00b9 Bilkul ap Quran ePak ki tilawat itni achi krty hain k dil ko bht skon milta h \u00e2\u20ac\u00a6 https // tco / K8OGQIeznf",
+        "gold": "positive",
+        "predicted": "neutral",
+        "noise_score": 0.1239,
+        "noise_group": "LOW",
+        "code_mixing_ratio": 0.2143,
+        "emoji_density": 0.0,
+        "repetition_score": 0.0,
+        "confidence": 0.4816
+      },
+      {
+        "uid": "16583",
+        "text": "RT @ thepradeep01 @ azkhawaja1 105 all out # HarJagahDher 150 run to bante nahi lekin kashmir chahiye bc .",
+        "gold": "negative",
+        "predicted": "neutral",
+        "noise_score": 0.1164,
+        "noise_group": "LOW",
+        "code_mixing_ratio": 0.2667,
+        "emoji_density": 0.0,
+        "repetition_score": 0.0,
+        "confidence": 0.5267
+      },
+      {
+        "uid": "25678",
+        "text": "RT @ Pratima48816302 @ GitaSKapoor Ye to aise apni details de rahe jaise iske Ghar ladki byahni ho humne apne .\u00f0\u0178\u02dc\u201a mansik santulan thik nhi iska \u00e2\u20ac\u00a6",
+        "gold": "neutral",
+        "predicted": "negative",
+        "noise_score": 0.0772,
+        "noise_group": "LOW",
+        "code_mixing_ratio": 0.12,
+        "emoji_density": 0.0,
+        "repetition_score": 0.0,
+        "confidence": 0.6255
+      }
+    ],
+    "general_misclassification": [
+      {
+        "uid": "40769",
+        "text": "Setting up for our HII audit workshop with matrons Thank you ISS for your support and super refreshments https // t co / oQE5Fd2FBH",
+        "gold": "neutral",
+        "predicted": "positive",
+        "noise_score": 0.1731,
+        "noise_group": "LOW",
+        "code_mixing_ratio": 0.5,
+        "emoji_density": 0.0,
+        "repetition_score": 0.0,
+        "confidence": 0.791
+      },
+      {
+        "uid": "843",
+        "text": "@ Osamathemalang @ BilalKhanWriter @ fawadchaudhry Hahaha ye bnda hrksi ko kafir kehta rehta ha Apne ilawa isay koi musalman nazr hi niata",
+        "gold": "negative",
+        "predicted": "neutral",
+        "noise_score": 0.1461,
+        "noise_group": "LOW",
+        "code_mixing_ratio": 0.4,
+        "emoji_density": 0.0,
+        "repetition_score": 0.0,
+        "confidence": 0.4366
+      },
+      {
+        "uid": "23329",
+        "text": "@ nirahua1 @ narendramodi @ myogiadityanath @ BJP4India jai jai jai AKHELISH jai SAMAJWAD PIR 5sal jhelna padega na \u00e2\u20ac\u00a6 https // t co / avmQMEXZDQ",
+        "gold": "positive",
+        "predicted": "neutral",
+        "noise_score": 0.1031,
+        "noise_group": "LOW",
+        "code_mixing_ratio": 0.15,
+        "emoji_density": 0.0,
+        "repetition_score": 0.0,
+        "confidence": 0.7092
+      },
+      {
+        "uid": "43516",
+        "text": "JcdPs moulladad k hudood Goth faqeerabad me 3 chor chori karty hue Gaon walon k hath pakry gaye 1 Farar police ky hawaly . Nabi bux Pandrani",
+        "gold": "neutral",
+        "predicted": "negative",
+        "noise_score": 0.1337,
+        "noise_group": "LOW",
+        "code_mixing_ratio": 0.4211,
+        "emoji_density": 0.0,
+        "repetition_score": 0.0,
+        "confidence": 0.8432
+      },
+      {
+        "uid": "17588",
+        "text": "RT @ Being _ Zeeshan09 Main Turpeya Ghar se Dur # TurpeyaSong Mind Blowing Song Bhaijan \u00f0\u0178\u201d\u00a5\u00f0\u0178\u201d\u00a5\u00f0\u0178\u201d\u00a5 # Eid2019 # Bharat # BharatThisEid # 14DaysToBHARAT h \u00e2\u20ac\u00a6",
+        "gold": "positive",
+        "predicted": "neutral",
+        "noise_score": 0.1936,
+        "noise_group": "LOW",
+        "code_mixing_ratio": 0.3889,
+        "emoji_density": 0.0,
+        "repetition_score": 0.0,
+        "confidence": 0.5278
+      }
+    ]
+  }
+}

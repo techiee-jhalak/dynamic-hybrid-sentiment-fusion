@@ -1,0 +1,5 @@
+Configuration,Accuracy,Macro_F1,Delta_Macro_F1,Delta_Accuracy
+Full Dynamic Fusion (Proposed),0.6883,0.6946,0.0,0.0
+Static Fusion (Fixed alpha=0.02),0.686,0.6918,-0.0028,-0.0023
+DistilBERT Only (alpha=0.0),0.6863,0.6917,-0.0029,-0.002
+VADER Only (alpha=1.0),0.3753,0.2009,-0.4937,-0.313

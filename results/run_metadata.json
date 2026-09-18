@@ -1,24 +1,13 @@
 {
-  "timestamp": "2026-09-15T23:45:00+05:30",
-  "git_commit": "326feb1",
-  "python_version": "3.12.10",
-  "random_seed": 42,
-  "dataset_filenames": [],
-  "dataset_row_counts": 0,
-  "split_counts": {
-    "train": 0,
-    "validation": 0,
-    "test": 0
-  },
-  "model_configurations": {
-    "distilbert": {
-      "epochs": 3,
-      "batch_size": 16,
-      "learning_rate": 2e-05,
-      "max_length": 128
-    }
-  },
-  "device": "cpu",
-  "checkpoint_paths": [],
-  "execution_status": "HALTED DUE TO MISSING DATA"
+  "experiment_name": "Phase 6 Real SentiMix Hinglish Evaluation",
+  "dataset": "SemEval-2020 Task 9 / SentiMix \u2014 Hinglish",
+  "test_sample_count": 3000,
+  "train_sample_count": 14000,
+  "dev_sample_count": 3000,
+  "execution_timestamp_utc": "2026-09-18T15:02:46.191090+00:00",
+  "python_version": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+  "torch_version": "2.14.0+cpu",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "checkpoint_used": "C:\\Users\\ASUS\\OneDrive\\Desktop\\dynamic-hybrid-sentiment-fusion\\saved_models\\sentimix_distilbert_best",
+  "primary_metric": "macro_f1"
 }

@@ -191,3 +191,10 @@ class SentimentInferencePipeline:
             )
 
         return results
+
+
+# Export SentiMix 3-class production inference pipeline
+from src.pipeline_3class import (  # noqa: E402
+    Sentimix3ClassPipelineResult,
+    Sentimix3ClassInferencePipeline,
+)

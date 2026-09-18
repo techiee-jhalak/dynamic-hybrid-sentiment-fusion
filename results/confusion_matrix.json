@@ -1,0 +1,98 @@
+{
+  "dynamic_fusion": {
+    "matrix": [
+      [
+        663,
+        35,
+        302
+      ],
+      [
+        15,
+        624,
+        261
+      ],
+      [
+        113,
+        209,
+        778
+      ]
+    ],
+    "labels": [
+      "positive",
+      "negative",
+      "neutral"
+    ]
+  },
+  "distilbert": {
+    "matrix": [
+      [
+        692,
+        44,
+        264
+      ],
+      [
+        18,
+        679,
+        203
+      ],
+      [
+        134,
+        278,
+        688
+      ]
+    ],
+    "labels": [
+      "positive",
+      "negative",
+      "neutral"
+    ]
+  },
+  "static_fusion": {
+    "matrix": [
+      [
+        687,
+        40,
+        273
+      ],
+      [
+        17,
+        668,
+        215
+      ],
+      [
+        130,
+        267,
+        703
+      ]
+    ],
+    "labels": [
+      "positive",
+      "negative",
+      "neutral"
+    ]
+  },
+  "vader": {
+    "matrix": [
+      [
+        31,
+        0,
+        969
+      ],
+      [
+        0,
+        2,
+        898
+      ],
+      [
+        5,
+        2,
+        1093
+      ]
+    ],
+    "labels": [
+      "positive",
+      "negative",
+      "neutral"
+    ]
+  }
+}
